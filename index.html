@@ -1,263 +1,284 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Minuteur Pomodoro Trop Stylé 🍅✨</title>
-    
-    <style>
-        body {
-            font-family: 'Arial', sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            /* Fond stylé et vibrant */
-            background: linear-gradient(135deg, #f06, #4a235a); 
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Minuteur Pomodoro Trop Stylé 🍅✨ (Auto)</title>
+    
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            /* Fond stylé et vibrant */
+            background: linear-gradient(135deg, #f06, #4a235a); 
+            color: white;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            background-color: rgba(255, 255, 255, 0.1);
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            text-align: center;
+            width: 90%;
+            max-width: 500px;
+            backdrop-filter: blur(5px); /* Effet flou pour le style */
+        }
+
+        h1 {
+            color: #fff;
+            margin-bottom: 20px;
+            font-size: 2em;
+        }
+
+        hr {
+            border: 0;
+            height: 1px;
+            background-image: linear-gradient(to right, rgba(255, 255, 255, 0), rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0));
+            margin: 20px 0;
+        }
+
+        /* --- Minuteur --- */
+        .timer-container {
+            margin: 30px 0;
+        }
+
+        #timer-display {
+            font-size: 5em; /* 72px */
+            font-weight: bold;
+            margin-bottom: 20px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 15px;
+            padding: 20px 30px;
+            display: inline-block;
+            letter-spacing: 5px;
+            transition: color 0.5s, background-color 0.5s;
+        }
+
+        /* --- Boutons de Contrôle --- */
+        button {
+            background-color: #ffc107; /* Jaune standard */
+            color: #333;
+            border: none;
+            padding: 12px 25px;
+            margin: 5px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: bold;
+            transition: background-color 0.3s, transform 0.1s, box-shadow 0.3s;
+        }
+
+        button:hover {
+            background-color: #ffeb3b;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 193, 7, 0.4);
+        }
+        
+        /* Styles spécifiques aux boutons de mode */
+        .mode-selector button {
+            background-color: rgba(255, 255, 255, 0.2);
+            color: white;
+            margin: 5px;
+            padding: 10px 20px;
+            border-radius: 10px;
+            font-weight: normal;
+        }
+
+        .mode-selector button.active {
+            background-color: #f06; /* Couleur active Pomodoro */
+            box-shadow: 0 0 15px rgba(255, 0, 102, 0.8);
+            transform: scale(1.05);
+            font-weight: bold;
+        }
+        
+        /* --- Configuration & Récompenses --- */
+        .settings input, .settings label {
+            display: block;
+            margin: 10px auto;
+        }
+        .settings label {
+            text-align: left;
+            margin-top: 15px;
+        }
+        .settings input {
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            background-color: rgba(255, 255, 255, 0.2);
+            color: white;
+            width: calc(100% - 20px);
+            box-sizing: border-box;
+            font-size: 1em;
+        }
+        
+        .settings #save-settings {
+            background-color: #28a745;
+            color: white;
+            width: 100%;
+            margin-top: 20px;
+        }
+
+        /* Style pour le nouveau bouton Auto-Start */
+        .settings #toggle-auto-start {
+            background-color: #17a2b8; /* Cyan */
             color: white;
-            margin: 0;
-            padding: 20px;
-        }
-
-        .container {
-            background-color: rgba(255, 255, 255, 0.1);
-            padding: 30px;
-            border-radius: 20px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-            text-align: center;
-            width: 90%;
-            max-width: 500px;
-            backdrop-filter: blur(5px); /* Effet flou pour le style */
-        }
-
-        h1 {
-            color: #fff;
-            margin-bottom: 20px;
-            font-size: 2em;
-        }
-
-        hr {
-            border: 0;
-            height: 1px;
-            background-image: linear-gradient(to right, rgba(255, 255, 255, 0), rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0));
-            margin: 20px 0;
-        }
-
-        /* --- Minuteur --- */
-        .timer-container {
-            margin: 30px 0;
-        }
-
-        #timer-display {
-            font-size: 5em; /* 72px */
-            font-weight: bold;
-            margin-bottom: 20px;
-            background: rgba(0, 0, 0, 0.3);
-            border-radius: 15px;
-            padding: 20px 30px;
-            display: inline-block;
-            letter-spacing: 5px;
-            transition: color 0.5s, background-color 0.5s;
-        }
-
-        /* --- Boutons de Contrôle --- */
-        button {
-            background-color: #ffc107; /* Jaune standard */
-            color: #333;
-            border: none;
-            padding: 12px 25px;
-            margin: 5px;
-            border-radius: 50px;
-            cursor: pointer;
-            font-size: 1em;
-            font-weight: bold;
-            transition: background-color 0.3s, transform 0.1s, box-shadow 0.3s;
-        }
-
-        button:hover {
-            background-color: #ffeb3b;
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(255, 193, 7, 0.4);
-        }
-        
-        /* Styles spécifiques aux boutons de mode */
-        .mode-selector button {
-            background-color: rgba(255, 255, 255, 0.2);
-            color: white;
-            margin: 5px;
-            padding: 10px 20px;
-            border-radius: 10px;
-            font-weight: normal;
-        }
-
-        .mode-selector button.active {
-            background-color: #f06; /* Couleur active Pomodoro */
-            box-shadow: 0 0 15px rgba(255, 0, 102, 0.8);
-            transform: scale(1.05);
-            font-weight: bold;
-        }
-        
-        /* --- Configuration & Récompenses --- */
-        .settings input, .settings label {
-            display: block;
-            margin: 10px auto;
-        }
-        .settings label {
-            text-align: left;
-            margin-top: 15px;
-        }
-        .settings input {
-            padding: 10px;
-            border: none;
-            border-radius: 5px;
-            background-color: rgba(255, 255, 255, 0.2);
-            color: white;
-            width: calc(100% - 20px);
-            box-sizing: border-box;
-            font-size: 1em;
-        }
-        
-        .settings #save-settings {
-            background-color: #28a745;
-            color: white;
+            margin-top: 10px;
             width: 100%;
-            margin-top: 20px;
         }
-        
-        .rewards-section {
-            background-color: rgba(0, 0, 0, 0.2);
-            padding: 20px;
-            border-radius: 10px;
-            margin-top: 20px;
+        .settings #toggle-auto-start.active {
+            background-color: #20c997; /* Vert clair */
         }
-        
-        #rewards-list {
-            text-align: left;
-            margin-top: 15px;
-            max-height: 200px;
-            overflow-y: auto;
-        }
+        
+        .rewards-section {
+            background-color: rgba(0, 0, 0, 0.2);
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+        }
+        
+        #rewards-list {
+            text-align: left;
+            margin-top: 15px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
 
-        .reward-item {
-            font-size: 1.2em;
-            margin: 8px 0;
-            padding: 5px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            animation: fadeIn 0.5s ease-out;
-        }
+        .reward-item {
+            font-size: 1.2em;
+            margin: 8px 0;
+            padding: 5px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            animation: fadeIn 0.5s ease-out;
+        }
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
 
-        /* Responsive */
-        @media (max-width: 600px) {
-            #timer-display {
-                font-size: 4em;
-            }
-            button {
-                padding: 10px 15px;
-                font-size: 0.9em;
-            }
-        }
-    </style>
+        /* Responsive */
+        @media (max-width: 600px) {
+            #timer-display {
+                font-size: 4em;
+            }
+            button {
+                padding: 10px 15px;
+                font-size: 0.9em;
+            }
+        }
+    </style>
 </head>
 <body>
 
-    <div class="container">
-        <h1>Minuteur Pomodoro Stylé 🚀</h1>
+    <div class="container">
+        <h1>Minuteur Pomodoro Stylé 🚀</h1>
 
-        <div class="settings">
-            <label for="pomodoro-time">Pomodoro (min) :</label>
-            <input type="number" id="pomodoro-time" value="25" min="1">
-            <label for="short-break-time">Pause Courte (min) :</label>
-            <input type="number" id="short-break-time" value="5" min="1">
-            <label for="long-break-time">Pause Longue (min) :</label>
-            <input type="number" id="long-break-time" value="15" min="1">
-            <button id="save-settings">💾 Sauvegarder les Temps</button>
-        </div>
+                <div class="settings">
+            <label for="pomodoro-time">Pomodoro (min) :</label>
+            <input type="number" id="pomodoro-time" value="25" min="1">
+            <label for="short-break-time">Pause Courte (min) :</label>
+            <input type="number" id="short-break-time" value="5" min="1">
+            <label for="long-break-time">Pause Longue (min) :</label>
+            <input type="number" id="long-break-time" value="15" min="1">
+            <button id="save-settings">💾 Sauvegarder les Temps</button>
+            <button id="toggle-auto-start" class="active">🔁 Auto-Enchaînement : ON</button>
+        </div>
 
-        <hr>
+        <hr>
 
-        <div class="mode-selector">
-            <button id="mode-pomodoro" class="active">🍅 Pomodoro</button>
-            <button id="mode-short-break">☕ Pause Courte</button>
-            <button id="mode-long-break">🏖️ Pause Longue</button>
-        </div>
+        <div class="mode-selector">
+            <button id="mode-pomodoro" class="active">🍅 Pomodoro</button>
+            <button id="mode-short-break">☕ Pause Courte</button>
+            <button id="mode-long-break">🏖️ Pause Longue</button>
+        </div>
 
-        <div class="timer-container">
-            <div id="timer-display">25:00</div>
-            <div class="controls">
-                <button id="start-btn">▶️ Démarrer</button>
-                <button id="pause-btn" style="display:none;">⏸️ Pause</button>
-                <button id="reset-btn">🔄 Réinitialiser</button>
-            </div>
-            <p id="session-counter">Pomodoros Terminés : 0</p>
-        </div>
+        <div class="timer-container">
+            <div id="timer-display">25:00</div>
+            <div class="controls">
+                <button id="start-btn">▶️ Démarrer</button>
+                <button id="pause-btn" style="display:none;">⏸️ Pause</button>
+                <button id="reset-btn">🔄 Réinitialiser</button>
+            </div>
+            <p id="session-counter">Pomodoros Terminés : 0</p>
+        </div>
 
-        <hr>
+        <hr>
 
-        <div class="rewards-section">
-            <h2>🏆 Mes Récompenses Stylées</h2>
-            <div id="rewards-list">
-                <p>Chargement des récompenses...</p>
-            </div>
-        </div>
-    </div>
+        <div class="rewards-section">
+            <h2>🏆 Mes Récompenses Stylées</h2>
+            <div id="rewards-list">
+                <p>Chargement des récompenses...</p>
+            </div>
+        </div>
+    </div>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            // --- Éléments du DOM ---
-            const timerDisplay = document.getElementById('timer-display');
-            const startBtn = document.getElementById('start-btn');
-            const pauseBtn = document.getElementById('pause-btn');
-            const sessionCounter = document.getElementById('session-counter');
-            const rewardsList = document.getElementById('rewards-list');
-            const saveSettingsBtn = document.getElementById('save-settings');
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // --- Éléments du DOM ---
+            const timerDisplay = document.getElementById('timer-display');
+            const startBtn = document.getElementById('start-btn');
+            const pauseBtn = document.getElementById('pause-btn');
+            const sessionCounter = document.getElementById('session-counter');
+            const rewardsList = document.getElementById('rewards-list');
+            const saveSettingsBtn = document.getElementById('save-settings');
+            const toggleAutoStartBtn = document.getElementById('toggle-auto-start'); // NOUVEAU
+            
+            // Modes
+            const modePomodoro = document.getElementById('mode-pomodoro');
+            const modeShortBreak = document.getElementById('mode-short-break');
+            const modeLongBreak = document.getElementById('mode-long-break');
+
+            // --- Variables d'État ---
+            let intervalId = null;
+            let totalSeconds = 0;
+            let isPaused = true;
+            let currentMode = 'pomodoro';
+            let pomodoroCount = 0;
+            let autoStartEnabled = true; // NOUVEAU : Activé par défaut
             
-            // Modes
-            const modePomodoro = document.getElementById('mode-pomodoro');
-            const modeShortBreak = document.getElementById('mode-short-break');
-            const modeLongBreak = document.getElementById('mode-long-break');
+            // Définitions des temps
+            let times = {
+                pomodoro: 25,
+                shortBreak: 5,
+                longBreak: 15
+            };
 
-            // --- Variables d'État ---
-            let intervalId = null;
-            let totalSeconds = 0;
-            let isPaused = true;
-            let currentMode = 'pomodoro'; // 'pomodoro', 'shortBreak', 'longBreak'
-            let pomodoroCount = 0;
+            // Liste des récompenses progressives
+            const allRewards = [
+                { emoji: '🌟', desc: 'Premier pas (Simple) !', required: 1 },
+                { emoji: '💡', desc: 'Concentration active !', required: 3 },
+                { emoji: '🔥', desc: 'En feu !', required: 5 },
+                { emoji: '🦾', desc: 'Robot de productivité (Difficile)', required: 8 },
+                { emoji: '👑', desc: 'Maître du temps', required: 12 },
+                { emoji: '💎', desc: 'Productivité Diamant (Très Difficile)', required: 16 },
+                { emoji: '🌌', desc: 'Vitesse de la lumière', required: 20 },
+            ];
+            let obtainedRewards = [];
 
-            // Définitions des temps (en minutes, valeurs par défaut)
-            let times = {
-                pomodoro: 25,
-                shortBreak: 5,
-                longBreak: 15
-            };
+            // --- Fonctions de LocalStorage ---
 
-            // Liste des récompenses progressives
-            const allRewards = [
-                { emoji: '🌟', desc: 'Premier pas (Simple) !', required: 1 },
-                { emoji: '💡', desc: 'Concentration active !', required: 3 },
-                { emoji: '🔥', desc: 'En feu !', required: 5 },
-                { emoji: '🦾', desc: 'Robot de productivité (Difficile)', required: 8 },
-                { emoji: '👑', desc: 'Maître du temps', required: 12 },
-                { emoji: '💎', desc: 'Productivité Diamant (Très Difficile)', required: 16 },
-                { emoji: '🌌', desc: 'Vitesse de la lumière', required: 20 },
-            ];
-            let obtainedRewards = [];
+            function loadState() {
+                // Charger les autres états... (inchangé)
 
-            // --- Fonctions de LocalStorage ---
+                // NOUVEAU: Charger l'état de l'auto-start
+                const savedAutoStart = localStorage.getItem('autoStartEnabled');
+                if (savedAutoStart !== null) {
+                    autoStartEnabled = savedAutoStart === 'true';
+                    updateAutoStartButton();
+                }
 
-            function loadState() {
-                // Charger le compteur
                 const savedCount = localStorage.getItem('pomodoroCount');
                 if (savedCount) {
                     pomodoroCount = parseInt(savedCount, 10);
                     sessionCounter.textContent = `Pomodoros Terminés : ${pomodoroCount}`;
                 }
                 
-                // Charger les récompenses
                 const savedRewards = localStorage.getItem('obtainedRewards');
                 if (savedRewards) {
                     obtainedRewards = JSON.parse(savedRewards);
@@ -266,7 +287,6 @@
                     rewardsList.innerHTML = '<p>Aucune récompense pour le moment. Travaille bien !</p>';
                 }
 
-                // Charger les temps personnalisés
                 const savedTimes = localStorage.getItem('pomodoroTimes');
                 if (savedTimes) {
                     times = JSON.parse(savedTimes);
@@ -275,176 +295,202 @@
                     document.getElementById('long-break-time').value = times.longBreak;
                 }
 
-                // Initialiser l'affichage
-                setTimer(currentMode, times[currentMode]);
+                setTimer(currentMode, times[currentMode]);
+            }
+
+            function saveState() {
+                localStorage.setItem('pomodoroCount', pomodoroCount);
+                localStorage.setItem('obtainedRewards', JSON.stringify(obtainedRewards));
+                localStorage.setItem('pomodoroTimes', JSON.stringify(times));
+                localStorage.setItem('autoStartEnabled', autoStartEnabled); // NOUVEAU
+            }
+
+            // --- Fonctions du Minuteur ---
+            
+            // MODIFIÉ : Ajout du démarage auto si l'option est active
+            function switchToMode(mode, autoStart = false) {
+                if (intervalId) {
+                    clearInterval(intervalId);
+                    intervalId = null;
+                }
+                setTimer(mode, times[mode]);
+                isPaused = true;
+                startBtn.style.display = 'block';
+                pauseBtn.style.display = 'none';
+
+                if (autoStart && autoStartEnabled) { // Démarrage automatique ici
+                    // On donne un petit délai pour l'alerte
+                    setTimeout(startTimer, 100); 
+                }
+            }
+
+            // MODIFIÉ : La fonction tick est le point central de l'auto-enchaînement
+            function tick() {
+                if (totalSeconds <= 0) {
+                    clearInterval(intervalId);
+                    intervalId = null;
+                    isPaused = true;
+                    
+                    let nextMode;
+                    let alertMessage;
+
+                    if (currentMode === 'pomodoro') {
+                        pomodoroCount++;
+                        sessionCounter.textContent = `Pomodoros Terminés : ${pomodoroCount}`;
+                        saveState(); 
+                        checkReward(pomodoroCount);
+                        
+                        nextMode = (pomodoroCount % 4 === 0) ? 'longBreak' : 'shortBreak';
+                        alertMessage = `Pomodoro terminé ! 🥳 C'est l'heure de la PAUSE ☕ !`;
+                    } else {
+                        nextMode = 'pomodoro';
+                        alertMessage = `Pause terminée ! 🦾 Retour au TRAVAIL 🍅 !`;
+                    }
+                    
+                    alert(alertMessage);
+                    
+                    // LE CHANGEMENT CLÉ : On passe au mode suivant et on demande l'auto-start
+                    switchToMode(nextMode, true); 
+
+                } else if (!isPaused) {
+                    totalSeconds--;
+                    updateDisplay();
+                }
+            }
+
+            // NOUVELLE FONCTION pour le bouton Auto-Start
+            function toggleAutoStart() {
+                autoStartEnabled = !autoStartEnabled;
+                saveState();
+                updateAutoStartButton();
+                alert(`Auto-Enchaînement : ${autoStartEnabled ? 'ACTIVÉ' : 'DÉSACTIVÉ'}`);
             }
 
-            function saveState() {
-                localStorage.setItem('pomodoroCount', pomodoroCount);
-                localStorage.setItem('obtainedRewards', JSON.stringify(obtainedRewards));
-                localStorage.setItem('pomodoroTimes', JSON.stringify(times));
-            }
-
-            // --- Fonctions du Minuteur ---
-
-            function updateDisplay() {
-                const minutes = Math.floor(totalSeconds / 60);
-                const seconds = totalSeconds % 60;
-                timerDisplay.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-            }
-
-            function setTimer(mode, minutes) {
-                currentMode = mode;
-                totalSeconds = minutes * 60;
-                updateDisplay();
-                updateModeButtons(mode);
+            function updateAutoStartButton() {
+                toggleAutoStartBtn.textContent = `🔁 Auto-Enchaînement : ${autoStartEnabled ? 'ON' : 'OFF'}`;
+                if (autoStartEnabled) {
+                    toggleAutoStartBtn.classList.add('active');
+                } else {
+                    toggleAutoStartBtn.classList.remove('active');
+                }
             }
             
-            function tick() {
-                if (totalSeconds <= 0) {
-                    clearInterval(intervalId);
-                    intervalId = null;
-                    isPaused = true;
-                    
-                    if (currentMode === 'pomodoro') {
-                        pomodoroCount++;
-                        sessionCounter.textContent = `Pomodoros Terminés : ${pomodoroCount}`;
-                        saveState(); 
-                        
-                        checkReward(pomodoroCount); // Vérifie récompense
-                        
-                        // Logique Longue/Courte Pause
-                        if (pomodoroCount % 4 === 0) {
-                            switchToMode('longBreak');
-                        } else {
-                            switchToMode('shortBreak');
-                        }
-                    } else {
-                        // Après une pause, revenir en mode Pomodoro
-                        switchToMode('pomodoro');
-                    }
-                    
-                    alert(`Temps terminé ! Il est temps pour le mode : ${currentMode === 'pomodoro' ? 'TRAVAIL 🍅' : 'PAUSE ☕'}`);
-                    startBtn.style.display = 'block';
-                    pauseBtn.style.display = 'none';
+            // --- Fonctions inchangées (updateDisplay, startTimer, pauseTimer, resetTimer, updateModeButtons, checkReward, renderRewards) ---
+            // ... (coller ici les autres fonctions non modifiées si besoin de voir le code complet, mais les principales modifications sont faites ci-dessus)
+            
+            function updateDisplay() {
+                const minutes = Math.floor(totalSeconds / 60);
+                const seconds = totalSeconds % 60;
+                timerDisplay.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            }
 
-                } else if (!isPaused) {
-                    totalSeconds--;
-                    updateDisplay();
-                }
-            }
+            function setTimer(mode, minutes) {
+                currentMode = mode;
+                totalSeconds = minutes * 60;
+                updateDisplay();
+                updateModeButtons(mode);
+            }
 
-            function startTimer() {
-                if (!intervalId || isPaused) {
-                    isPaused = false;
-                    if (!intervalId) {
-                        intervalId = setInterval(tick, 1000);
-                    }
-                    startBtn.style.display = 'none';
-                    pauseBtn.style.display = 'block';
-                }
-            }
+            function startTimer() {
+                if (!intervalId || isPaused) {
+                    isPaused = false;
+                    if (!intervalId) {
+                        intervalId = setInterval(tick, 1000);
+                    }
+                    startBtn.style.display = 'none';
+                    pauseBtn.style.display = 'block';
+                }
+            }
 
-            function pauseTimer() {
-                isPaused = true;
-                startBtn.style.display = 'block';
-                pauseBtn.style.display = 'none';
-            }
+            function pauseTimer() {
+                isPaused = true;
+                startBtn.style.display = 'block';
+                pauseBtn.style.display = 'none';
+            }
 
-            function resetTimer() {
-                clearInterval(intervalId);
-                intervalId = null;
-                isPaused = true;
-                setTimer(currentMode, times[currentMode]);
-                startBtn.style.display = 'block';
-                pauseBtn.style.display = 'none';
-            }
+            function resetTimer() {
+                clearInterval(intervalId);
+                intervalId = null;
+                isPaused = true;
+                setTimer(currentMode, times[currentMode]);
+                startBtn.style.display = 'block';
+                pauseBtn.style.display = 'none';
+            }
 
-            function switchToMode(mode) {
-                if (intervalId) {
-                    clearInterval(intervalId);
-                    intervalId = null;
-                }
-                setTimer(mode, times[mode]);
-                isPaused = true;
-                startBtn.style.display = 'block';
-                pauseBtn.style.display = 'none';
-            }
-
-            function updateModeButtons(activeMode) {
-                modePomodoro.classList.remove('active');
-                modeShortBreak.classList.remove('active');
-                modeLongBreak.classList.remove('active');
-                
-                if (activeMode === 'pomodoro') modePomodoro.classList.add('active');
-                if (activeMode === 'shortBreak') modeShortBreak.classList.add('active');
-                if (activeMode === 'longBreak') modeLongBreak.classList.add('active');
-            }
-
-            // --- Fonctions de Récompenses ---
+            function updateModeButtons(activeMode) {
+                modePomodoro.classList.remove('active');
+                modeShortBreak.classList.remove('active');
+                modeLongBreak.classList.remove('active');
+                
+                if (activeMode === 'pomodoro') modePomodoro.classList.add('active');
+                if (activeMode === 'shortBreak') modeShortBreak.classList.add('active');
+                if (activeMode === 'longBreak') modeLongBreak.classList.add('active');
+            }
 
             function checkReward(count) {
-                const newReward = allRewards.find(r => r.required === count);
-                
-                // Vérifie si le seuil est atteint ET si la récompense n'est pas déjà obtenue
-                if (newReward && !obtainedRewards.some(r => r.required === newReward.required)) {
-                    obtainedRewards.push(newReward);
-                    saveState(); 
-                    renderRewards(); 
-                    alert(`Félicitations ! Nouvelle récompense débloquée : ${newReward.emoji} ${newReward.desc}`);
-                }
-            }
+                const newReward = allRewards.find(r => r.required === count);
+                
+                if (newReward && !obtainedRewards.some(r => r.required === newReward.required)) {
+                    obtainedRewards.push(newReward);
+                    saveState(); 
+                    renderRewards(); 
+                    alert(`Félicitations ! Nouvelle récompense débloquée : ${newReward.emoji} ${newReward.desc}`);
+                }
+            }
 
-            function renderRewards() {
-                rewardsList.innerHTML = ''; 
-                
-                if (obtainedRewards.length === 0) {
-                    rewardsList.innerHTML = '<p>Aucune récompense pour le moment. Travaille bien !</p>';
-                    return;
-                }
+            function renderRewards() {
+                rewardsList.innerHTML = ''; 
+                
+                if (obtainedRewards.length === 0) {
+                    rewardsList.innerHTML = '<p>Aucune récompense pour le moment. Travaille bien !</p>';
+                    return;
+                }
 
-                // Trier pour que les plus récents soient en haut
-                const sortedRewards = [...obtainedRewards].sort((a, b) => b.required - a.required);
+                const sortedRewards = [...obtainedRewards].sort((a, b) => b.required - a.required);
 
-                sortedRewards.forEach(reward => {
-                    const rewardItem = document.createElement('div');
-                    rewardItem.className = 'reward-item';
-                    rewardItem.innerHTML = `${reward.emoji} **${reward.desc}** (${reward.required} Pomodoros)`;
-                    rewardsList.appendChild(rewardItem);
-                });
-            }
+                sortedRewards.forEach(reward => {
+                    const rewardItem = document.createElement('div');
+                    rewardItem.className = 'reward-item';
+                    rewardItem.innerHTML = `${reward.emoji} **${reward.desc}** (${reward.required} Pomodoros)`;
+                    rewardsList.appendChild(rewardItem);
+                });
+            }
+            // --- Fin des fonctions inchangées ---
 
-            // --- Gestionnaires d'Événements ---
-            startBtn.addEventListener('click', startTimer);
-            pauseBtn.addEventListener('click', pauseTimer);
-            document.getElementById('reset-btn').addEventListener('click', resetTimer);
 
-            modePomodoro.addEventListener('click', () => switchToMode('pomodoro'));
-            modeShortBreak.addEventListener('click', () => switchToMode('shortBreak'));
-            modeLongBreak.addEventListener('click', () => switchToMode('longBreak'));
+            // --- Gestionnaires d'Événements ---
+            startBtn.addEventListener('click', startTimer);
+            pauseBtn.addEventListener('click', pauseTimer);
+            document.getElementById('reset-btn').addEventListener('click', resetTimer);
 
-            saveSettingsBtn.addEventListener('click', () => {
-                const pTime = parseInt(document.getElementById('pomodoro-time').value, 10);
-                const sTime = parseInt(document.getElementById('short-break-time').value, 10);
-                const lTime = parseInt(document.getElementById('long-break-time').value, 10);
-                
-                if (pTime > 0 && sTime > 0 && lTime > 0) {
-                    times.pomodoro = pTime;
-                    times.shortBreak = sTime;
-                    times.longBreak = lTime;
-                    saveState();
-                    if (!intervalId) { // Mettre à jour si le minuteur est à l'arrêt
-                        setTimer(currentMode, times[currentMode]);
-                    }
-                    alert('Temps sauvegardés !');
-                } else {
-                    alert('Veuillez entrer des valeurs valides pour les temps (supérieures à 0).');
-                }
-            });
+            modePomodoro.addEventListener('click', () => switchToMode('pomodoro'));
+            modeShortBreak.addEventListener('click', () => switchToMode('shortBreak'));
+            modeLongBreak.addEventListener('click', () => switchToMode('longBreak'));
 
-            // --- Initialisation ---
-            loadState();
-        });
-    </script>
+            toggleAutoStartBtn.addEventListener('click', toggleAutoStart); // NOUVEAU
+
+            saveSettingsBtn.addEventListener('click', () => {
+                const pTime = parseInt(document.getElementById('pomodoro-time').value, 10);
+                const sTime = parseInt(document.getElementById('short-break-time').value, 10);
+                const lTime = parseInt(document.getElementById('long-break-time').value, 10);
+                
+                if (pTime > 0 && sTime > 0 && lTime > 0) {
+                    times.pomodoro = pTime;
+                    times.shortBreak = sTime;
+                    times.longBreak = lTime;
+                    saveState();
+                    if (!intervalId) {
+                        setTimer(currentMode, times[currentMode]);
+                    }
+                    alert('Temps sauvegardés !');
+                } else {
+                    alert('Veuillez entrer des valeurs valides pour les temps (supérieures à 0).');
+                }
+            });
+
+            // --- Initialisation ---
+            loadState();
+        });
+    </script>
 </body>
 </html>
