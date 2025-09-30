@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Minuteur Pomodoro Trop Stylé 🍅✨ (Auto, Silencieux)</title>
+    <title>Minuteur Pomodoro Stylé 🍅✨ (Auto, Pro)</title>
     
     <style>
         /* Importation d'une police Google Font pour un look moderne */
@@ -20,17 +20,18 @@
             color: white;
             margin: 0;
             padding: 20px;
+            transition: background 0.5s ease; /* Transition pour le changement de couleur */
         }
 
         .container {
-            background-color: rgba(255, 255, 255, 0.15); /* Légèrement plus opaque */
+            background-color: rgba(255, 255, 255, 0.15); 
             padding: 30px;
             border-radius: 25px;
-            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.6); /* Ombre plus intense */
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.6); 
             text-align: center;
             width: 90%;
             max-width: 550px;
-            backdrop-filter: blur(10px); /* Effet verre dépoli fort */
+            backdrop-filter: blur(10px); 
             border: 1px solid rgba(255, 255, 255, 0.2);
         }
 
@@ -54,7 +55,7 @@
         }
 
         #timer-display {
-            font-size: 6em; /* Encore plus grand */
+            font-size: 6em;
             font-weight: bold;
             margin-bottom: 25px;
             background: rgba(0, 0, 0, 0.4);
@@ -67,15 +68,9 @@
         }
 
         /* Couleurs du Minuteur par Mode */
-        .mode-pomodoro #timer-display {
-            color: #ff5e62; /* Rouge pour le travail */
-        }
-        .mode-shortBreak #timer-display {
-            color: #56c4e0; /* Bleu pour la pause courte */
-        }
-        .mode-longBreak #timer-display {
-            color: #4cd964; /* Vert pour la pause longue */
-        }
+        .mode-pomodoro #timer-display { color: #ff5e62; } /* Rouge pour le travail */
+        .mode-shortBreak #timer-display { color: #56c4e0; } /* Bleu pour la pause courte */
+        .mode-longBreak #timer-display { color: #4cd964; } /* Vert pour la pause longue */
 
         /* --- Boutons de Contrôle --- */
         button {
@@ -118,15 +113,6 @@
         
         /* --- Configuration & Récompenses --- */
         .settings { margin-bottom: 10px; }
-        .settings input, .settings label {
-            display: block;
-            margin: 8px auto;
-        }
-        .settings label {
-            text-align: left;
-            margin-top: 10px;
-            font-size: 0.9em;
-        }
         .settings input {
             padding: 10px;
             border: none;
@@ -136,6 +122,14 @@
             width: 100%;
             box-sizing: border-box;
             font-size: 1em;
+            display: block;
+            margin: 8px auto;
+        }
+        .settings label {
+            text-align: left;
+            margin-top: 10px;
+            font-size: 0.9em;
+            display: block;
         }
         
         .settings #save-settings {
@@ -145,16 +139,15 @@
             margin-top: 15px;
         }
         
-        /* Style pour le bouton Auto-Start */
         .settings #toggle-auto-start {
-            background-color: #17a2b8; /* Cyan */
+            background-color: #17a2b8; 
             color: white;
             margin-top: 10px;
             width: 100%;
             padding: 10px 20px;
         }
         .settings #toggle-auto-start.active {
-            background-color: #20c997; /* Vert clair */
+            background-color: #20c997; 
             box-shadow: 0 0 10px rgba(32, 201, 151, 0.5);
         }
         
@@ -184,6 +177,16 @@
             from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
         }
+        
+        #reward-notification {
+            color: #20c997; 
+            font-weight: bold; 
+            margin-bottom: 10px; 
+            display: none;
+            padding: 10px;
+            border: 2px solid #20c997;
+            border-radius: 10px;
+        }
 
         /* Responsive */
         @media (max-width: 600px) {
@@ -204,19 +207,12 @@
 </head>
 <body class="mode-pomodoro">
 
-    <audio id="beep-sound" src="data:audio/mp3;base64,SUQzBAAAAAABEvTEFBUxAAANCwAABBBBAABSAAAAAAAAAAAASW5mbwAAAAAAAABJbmZvAAAAAAAAY29tLmFwcGxlLmVpdHVuZXMAAB0AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg/* Style to make it act like a true app */
-        .reward-item strong {
-            font-weight: bold;
-        }
-    </style>
-</head>
-<body class="mode-pomodoro">
-
-    <audio id="beep-sound" preload="auto" hidden>
-        </audio>
-
+    <audio id="beep-sound" preload="auto" hidden></audio> 
+    
     <div class="container">
         <h1>Minuteur Pomodoro Stylé 🚀</h1>
+
+        <button id="request-notification-permission">🔔 Autoriser les Notifications</button>
 
         <div class="settings">
             <label for="pomodoro-time">Pomodoro (min) :</label>
@@ -251,7 +247,7 @@
 
         <div class="rewards-section">
             <h2>🏆 Mes Récompenses Stylées</h2>
-            <p id="reward-notification" style="color: #20c997; font-weight: bold; margin-bottom: 10px; display: none;">NOUVELLE RÉCOMPENSE !</p>
+            <p id="reward-notification" style="display: none;"></p>
             <div id="rewards-list">
                 <p>Chargement des récompenses...</p>
             </div>
@@ -269,7 +265,7 @@
             const rewardsList = document.getElementById('rewards-list');
             const saveSettingsBtn = document.getElementById('save-settings');
             const toggleAutoStartBtn = document.getElementById('toggle-auto-start');
-            const beepSound = document.getElementById('beep-sound'); // L'élément audio
+            const notificationBtn = document.getElementById('request-notification-permission');
             const rewardNotification = document.getElementById('reward-notification');
 
             // Modes
@@ -304,6 +300,66 @@
             ];
             let obtainedRewards = [];
 
+            // --- Fonctions Audio et Notifications ---
+
+            /**
+             * Joue un court bip sonore en utilisant l'API AudioContext (non bloquant).
+             */
+            function playBeep() {
+                try {
+                    const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                    const oscillator = audioContext.createOscillator();
+                    const gainNode = audioContext.createGain();
+
+                    oscillator.connect(gainNode);
+                    gainNode.connect(audioContext.destination);
+
+                    oscillator.type = 'sine'; 
+                    oscillator.frequency.setValueAtTime(440, audioContext.currentTime); 
+                    
+                    gainNode.gain.setValueAtTime(0.5, audioContext.currentTime);
+                    gainNode.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + 0.4); 
+
+                    oscillator.start();
+                    oscillator.stop(audioContext.currentTime + 0.4);
+                } catch (e) {
+                    console.warn("Impossible de jouer le son AudioContext. Le navigateur peut bloquer l'API audio sans interaction utilisateur.");
+                }
+            }
+            
+            /**
+             * Affiche une notification desktop si la permission est accordée.
+             * @param {string} title - Le titre de la notification.
+             * @param {string} body - Le corps du message.
+             */
+            function sendNotification(title, body) {
+                if ('Notification' in window && Notification.permission === 'granted') {
+                    new Notification(title, {
+                        body: body,
+                        icon: 'https://i.imgur.com/g8uXy7F.png' // Lien vers une image de tomate pour l'icône
+                    });
+                } else if ('Notification' in window && Notification.permission !== 'denied' && !isPaused) {
+                    // Tenter de demander la permission si le minuteur est en cours
+                    Notification.requestPermission();
+                }
+            }
+
+            function requestNotificationPermission() {
+                if ('Notification' in window) {
+                    Notification.requestPermission().then(permission => {
+                        if (permission === 'granted') {
+                            notificationBtn.textContent = '🔔 Notifications ON';
+                            notificationBtn.disabled = true;
+                        } else {
+                            notificationBtn.textContent = '🔕 Notifications Bloquées';
+                        }
+                    });
+                } else {
+                    notificationBtn.textContent = '❌ Notifications non supportées';
+                    notificationBtn.disabled = true;
+                }
+            }
+            
             // --- Fonctions de LocalStorage ---
 
             function loadState() {
@@ -336,6 +392,14 @@
                 }
 
                 setTimer(currentMode, times[currentMode]);
+                
+                // Vérifier l'état initial de la permission de notification
+                if ('Notification' in window && Notification.permission === 'granted') {
+                    notificationBtn.textContent = '🔔 Notifications ON';
+                    notificationBtn.disabled = true;
+                } else if ('Notification' in window && Notification.permission === 'denied') {
+                    notificationBtn.textContent = '🔕 Notifications Bloquées';
+                }
             }
 
             function saveState() {
@@ -345,45 +409,15 @@
                 localStorage.setItem('autoStartEnabled', autoStartEnabled);
             }
 
-            // --- Fonctions Audio et UI ---
-
-            /**
-             * Joue un court bip sonore.
-             * Utilise une astuce pour rejouer le son rapidement en le rechargeant.
-             */
-            function playBeep() {
-                if (beepSound.src.startsWith('data:')) {
-                    // Si on utilise le son encodé (meilleure compatibilité pour un petit son)
-                    const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-                    const oscillator = audioContext.createOscillator();
-                    const gainNode = audioContext.createGain();
-
-                    oscillator.connect(gainNode);
-                    gainNode.connect(audioContext.destination);
-
-                    oscillator.type = 'sine'; // Onde sinusoïdale (son pur)
-                    oscillator.frequency.setValueAtTime(440, audioContext.currentTime); // Fréquence A4
-
-                    // Contrôle du volume et de l'arrêt
-                    gainNode.gain.setValueAtTime(0.5, audioContext.currentTime);
-                    gainNode.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + 0.3); // Extinction rapide
-
-                    oscillator.start();
-                    oscillator.stop(audioContext.currentTime + 0.3);
-                } else {
-                    // Si un fichier audio externe est utilisé
-                    beepSound.currentTime = 0;
-                    beepSound.play().catch(e => console.error("Erreur de lecture audio :", e));
-                }
-            }
-
-
             // --- Fonctions du Minuteur ---
 
             function updateDisplay() {
                 const minutes = Math.floor(totalSeconds / 60);
                 const seconds = totalSeconds % 60;
-                timerDisplay.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+                const timeString = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+                timerDisplay.textContent = timeString;
+                // Mettre à jour le titre de l'onglet pour l'arrière-plan
+                document.title = `(${timeString}) ${currentMode.toUpperCase()}`;
             }
 
             function setTimer(mode, minutes) {
@@ -400,10 +434,12 @@
                     intervalId = null;
                     isPaused = true;
                     
-                    playBeep(); // 🔔 L'appel du bip sonore
+                    playBeep(); 
 
                     let nextMode;
-                    
+                    let notificationTitle;
+                    let notificationBody;
+
                     if (currentMode === 'pomodoro') {
                         pomodoroCount++;
                         sessionCounter.textContent = `Pomodoros Terminés : ${pomodoroCount}`;
@@ -411,10 +447,17 @@
                         checkReward(pomodoroCount); 
                         
                         nextMode = (pomodoroCount % 4 === 0) ? 'longBreak' : 'shortBreak';
+                        notificationTitle = `🍅 Session terminée (${pomodoroCount}) !`;
+                        notificationBody = `C'est l'heure de la PAUSE ${nextMode === 'longBreak' ? 'longue (15 min)' : 'courte (5 min)'} !`;
                     } else {
                         nextMode = 'pomodoro';
+                        notificationTitle = `☕ Pause terminée !`;
+                        notificationBody = `🦾 Retour au TRAVAIL (25 min) ! Concentration maximale.`;
                     }
                     
+                    // Envoyer la notification non-bloquante
+                    sendNotification(notificationTitle, notificationBody);
+
                     // Passage au mode suivant avec demande d'auto-start
                     switchToMode(nextMode, true); 
 
@@ -437,8 +480,11 @@
 
             function pauseTimer() {
                 isPaused = true;
+                clearInterval(intervalId);
+                intervalId = null;
                 startBtn.style.display = 'block';
                 pauseBtn.style.display = 'none';
+                document.title = `PAUSED - ${currentMode.toUpperCase()}`;
             }
 
             function resetTimer() {
@@ -448,6 +494,7 @@
                 setTimer(currentMode, times[currentMode]);
                 startBtn.style.display = 'block';
                 pauseBtn.style.display = 'none';
+                document.title = `Minuteur Pomodoro Stylé 🍅✨`;
             }
             
             function switchToMode(mode, autoStart = false) {
@@ -460,7 +507,7 @@
                 startBtn.style.display = 'block';
                 pauseBtn.style.display = 'none';
 
-                if (autoStart && autoStartEnabled) {
+                if (autoStart && autoStartEnabled) { 
                     setTimeout(startTimer, 100); 
                 }
             }
@@ -505,7 +552,7 @@
                     obtainedRewards.push(newReward);
                     saveState(); 
                     renderRewards(); 
-                    // Affichage d'une notification discrète à la place de l'alerte
+                    // Affichage d'une notification discrète dans l'interface
                     rewardNotification.style.display = 'block';
                     rewardNotification.textContent = `🎉 NOUVELLE RÉCOMPENSE DÉBLOQUÉE : ${newReward.emoji} ${newReward.desc} !`;
                     setTimeout(() => {
@@ -542,7 +589,8 @@
             modeLongBreak.addEventListener('click', () => switchToMode('longBreak'));
             
             toggleAutoStartBtn.addEventListener('click', toggleAutoStart);
-
+            notificationBtn.addEventListener('click', requestNotificationPermission); // Nouveau
+            
             saveSettingsBtn.addEventListener('click', () => {
                 const pTime = parseInt(document.getElementById('pomodoro-time').value, 10);
                 const sTime = parseInt(document.getElementById('short-break-time').value, 10);
@@ -556,8 +604,19 @@
                     if (!intervalId) {
                         setTimer(currentMode, times[currentMode]);
                     }
+                    // Notification de sauvegarde non bloquante
+                    rewardNotification.style.display = 'block';
+                    rewardNotification.textContent = '💾 Temps et paramètres sauvegardés !';
+                    setTimeout(() => { rewardNotification.style.display = 'none'; }, 2000);
                 } else {
-                    alert('Veuillez entrer des valeurs valides pour les temps (supérieures à 0).');
+                    // Utilisation d'une notification interne à la place d'une alerte bloquante
+                    rewardNotification.style.display = 'block';
+                    rewardNotification.textContent = '❌ Erreur: Veuillez entrer des valeurs valides (supérieures à 0).';
+                    rewardNotification.style.color = '#dc3545'; // Rouge d'erreur
+                    setTimeout(() => { 
+                        rewardNotification.style.display = 'none';
+                        rewardNotification.style.color = '#20c997'; // Remettre la couleur normale
+                    }, 3000);
                 }
             });
 
