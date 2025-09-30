@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interface Simple Animée</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    
+    <style>
+        /* ------------------------------------- */
+        /* GÉNÉRAL & FOND ANIMÉ */
+        /* ------------------------------------- */
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow: hidden; /* Cache les débordements de l'animation de fond */
+            background-color: #000;
+        }
+
+        /* L'élément pour l'animation de fond "Vague" en fondu bleu/noir */
+        .background-wave {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            
+            /* Dégradé de base bleu/noir */
+            background: linear-gradient(135deg, #0f1c2c, #000000, #0c436d);
+            background-size: 400% 400%; /* Élargissement pour le mouvement de "vague" */
+            
+            /* L'animation elle-même */
+            animation: wave-motion 15s ease infinite alternate;
+        }
+
+        /* Définition de l'animation de fond */
+        @keyframes wave-motion {
+            0% {
+                background-position: 0% 0%; 
+            }
+            100% {
+                background-position: 100% 100%; 
+            }
+        }
+
+        /* ------------------------------------- */
+        /* CONTENEUR DE L'INTERFACE (1/4 de page) */
+        /* ------------------------------------- */
+        .interface-container {
+            /* Simule le 1/4 de la page. Ajustez les valeurs au besoin. */
+            width: 25%; 
+            min-width: 320px; 
+            max-width: 400px;
+            padding: 25px;
+            background: rgba(255, 255, 255, 0.05); /* Légèrement transparent */
+            border-radius: 15px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(8px); /* Effet verre dépoli */
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            z-index: 10;
+        }
+
+        .icon-grid {
+            display: grid;
+            /* 3 colonnes de taille égale */
+            grid-template-columns: repeat(3, 1fr); 
+            gap: 20px; /* Espace entre les icônes */
+            justify-items: center;
+            text-align: center;
+        }
+
+        /* ------------------------------------- */
+        /* STYLES DES ICONES RONDES "3D" */
+        /* ------------------------------------- */
+        .icon-button {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-decoration: none;
+            color: #fff; /* Texte blanc */
+            transition: transform 0.3s ease, color 0.3s ease;
+        }
+
+        .icon-button:hover {
+            transform: scale(1.05); /* Zoom léger au survol */
+            color: #4da6ff; /* Bleu clair au survol */
+        }
+
+        .icon-circle {
+            /* Taille des icônes de "bureau" dans le 1/4 de page */
+            width: 70px; 
+            height: 70px;
+            border-radius: 50%;
+            background-color: #ffffff; /* Fond cercle blanc */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 8px;
+            
+            /* Simulation de l'effet 3D (profondeur) */
+            box-shadow: 
+                0 6px 12px rgba(0, 0, 0, 0.4), /* Ombre extérieure */
+                inset 0 0 10px rgba(255, 255, 255, 0.5); /* Lumière intérieure */
+            transition: box-shadow 0.3s ease;
+        }
+
+        .icon-button:hover .icon-circle {
+             /* L'ombre change au survol pour un effet de "clic" */
+            box-shadow: 
+                0 2px 4px rgba(0, 0, 0, 0.5), /* Ombre réduite */
+                inset 0 0 18px #4da6ff; /* Lumière bleue intense */
+        }
+
+        .icon-circle i {
+            /* Style de l'icône Font Awesome */
+            font-size: 30px; 
+            color: #0d47a1; /* Bleu foncé pour l'icône */
+            
+            /* Relief pour l'icône */
+            text-shadow: 
+                1px 1px 1px rgba(0, 0, 0, 0.2), 
+                -1px -1px 1px rgba(255, 255, 255, 0.8);
+        }
+
+        .icon-label {
+            font-size: 0.85em;
+            font-weight: bold;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="background-wave"></div> <div class="interface-container">
+        <div class="icon-grid">
+            <a href="index.html" class="icon-button" title="Démarrer Pomodoro">
+                <span class="icon-circle">
+                    <i class="fas fa-clock"></i> 
+                </span>
+                <span class="icon-label">Pomodoro</span>
+            </a>
+            
+            <a href="musiques.html" class="icon-button" title="Écouter Musiques">
+                <span class="icon-circle">
+                    <i class="fas fa-music"></i>
+                </span>
+                <span class="icon-label">Musiques</span>
+            </a>
+            
+            <a href="tableau_blanc.html" class="icon-button" title="Ouvrir Tableau Blanc">
+                <span class="icon-circle">
+                    <i class="fas fa-chalkboard"></i>
+                </span>
+                <span class="icon-label">Tableau Blanc</span>
+            </a>
+            
+            <a href="pronote.html" class="icon-button" title="Accéder à Pronote">
+                <span class="icon-circle">
+                    <i class="fas fa-book-open"></i>
+                </span>
+                <span class="icon-label">Pronote</span>
+            </a>
+            
+            <a href="edt.html" class="icon-button" title="Voir Emploi du Temps">
+                <span class="icon-circle">
+                    <i class="fas fa-calendar-alt"></i>
+                </span>
+                <span class="icon-label">Emploi du Temps</span>
+            </a>
+            
+            <a href="mode_off.html" class="icon-button" title="Activer Mode Off">
+                <span class="icon-circle">
+                    <i class="fas fa-power-off"></i>
+                </span>
+                <span class="icon-label">Mode Off</span>
+            </a>
+        </div>
+    </div>
+
+</body>
+</html>
