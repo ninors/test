@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tableau Blanc Interactif Ambiant</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    
+    <style>
+        /* ------------------------------------- */
+        /* GÉNÉRAL & FOND ANIMÉ (Votre Style) */
+        /* ------------------------------------- */
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow: hidden; 
+            background-color: #000;
+            color: #fff;
+        }
+
+        .background-wave {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -2; /* Sous le tableau blanc */
+            background: linear-gradient(135deg, #0f1c2c, #000000, #0c436d);
+            background-size: 400% 400%;
+            animation: wave-motion 15s ease infinite alternate;
+        }
+
+        @keyframes wave-motion {
+            0% { background-position: 0% 0%; }
+            100% { background-position: 100% 100%; }
+        }
+
+        /* ------------------------------------- */
+        /* CONTENEUR DU TABLEAU BLANC */
+        /* ------------------------------------- */
+        .whiteboard-container {
+            width: 90vw; /* Utilise presque toute la largeur de l'écran */
+            height: 90vh; /* Utilise presque toute la hauteur de l'écran */
+            display: flex;
+            flex-direction: column;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            z-index: 10;
+        }
+        
+        /* Zone du Canvas (le tableau blanc lui-même) */
+        #drawing-canvas {
+            background-color: #fff; /* Le "tableau blanc" est blanc */
+            cursor: crosshair;
+            border-radius: 0 0 15px 15px;
+            flex-grow: 1;
+        }
+
+        /* ------------------------------------- */
+        /* BARRE D'OUTILS */
+        /* ------------------------------------- */
+        .toolbar {
+            display: flex;
+            flex-wrap: wrap;
+            padding: 10px 15px;
+            gap: 10px;
+            background: rgba(0, 0, 0, 0.3); /* Barre sombre/transparente */
+            border-radius: 15px 15px 0 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .tool-group {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            margin-right: 15px;
+            padding-right: 15px;
+            border-right: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .tool-button, .color-option {
+            background: none;
+            border: none;
+            color: #fff;
+            padding: 8px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.1s;
+            font-size: 1.1em;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .tool-button:hover:not(.active), .color-option:hover:not(.active) {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .tool-button.active {
+            background: #4da6ff;
+            color: #000;
+            box-shadow: 0 0 5px #4da6ff;
+        }
+
+        /* Couleurs */
+        .color-option {
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            padding: 0;
+            border: 2px solid transparent;
+        }
+
+        .color-option.active {
+            border-color: #4da6ff;
+            transform: scale(1.1);
+        }
+
+        /* Inputs */
+        .tool-input {
+            width: 60px;
+            padding: 5px;
+            border: 1px solid #4da6ff;
+            background-color: rgba(0, 0, 0, 0.5);
+            color: #fff;
+            border-radius: 5px;
+        }
+        
+        /* Champ de saisie de texte flottant */
+        #text-input {
+            position: absolute;
+            z-index: 100;
+            padding: 5px;
+            border: 1px solid #4da6ff;
+            background-color: rgba(0, 0, 0, 0.8);
+            color: #fff;
+            font-size: 16px;
+            display: none;
+            resize: none;
+        }
+
+        /* Bouton Accueil (Votre style) */
+        .home-button-wrapper {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            z-index: 11;
+        }
+
+        .home-button {
+            display: inline-flex;
+            align-items: center;
+            padding: 8px 15px;
+            text-decoration: none;
+            color: #fff;
+            background-color: rgba(77, 166, 255, 0.2);
+            border: 1px solid #4da6ff;
+            border-radius: 20px;
+            font-size: 0.9em;
+            font-weight: bold;
+            transition: background-color 0.3s, transform 0.3s;
+        }
+
+        .home-button:hover {
+            background-color: #4da6ff;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(77, 166, 255, 0.4);
+        }
+
+        .home-button i {
+            margin-right: 8px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="background-wave"></div>
+
+    <div class="home-button-wrapper">
+        <a href="accueil.html" class="home-button"><i class="fas fa-arrow-left"></i> Retour Accueil</a>
+    </div>
+
+    <div class="whiteboard-container">
+        
+        <div class="toolbar">
+            
+            <div class="tool-group">
+                <button class="tool-button active" id="tool-pen" data-tool="pen" title="Crayon (P)"><i class="fas fa-pencil-alt"></i></button>
+                <button class="tool-button" id="tool-eraser" data-tool="eraser" title="Gomme (E)"><i class="fas fa-eraser"></i></button>
+                <button class="tool-button" id="tool-text" data-tool="text" title="Texte (T)"><i class="fas fa-font"></i></button>
+            </div>
+
+            <div class="tool-group">
+                <button class="tool-button" data-tool="rectangle" title="Rectangle"><i class="far fa-square"></i></button>
+                <button class="tool-button" data-tool="circle" title="Cercle"><i class="far fa-circle"></i></button>
+            </div>
+
+            <div class="tool-group">
+                <label for="lineWidth" style="font-size: 0.8em;">Épaisseur:</label>
+                <input type="number" id="lineWidth" class="tool-input" value="5" min="1" max="50" onchange="setLineWidth(this.value)">
+                
+                <label for="colorPicker" style="font-size: 0.8em;">Couleur:</label>
+                <input type="color" id="colorPicker" class="tool-input" value="#000000" onchange="setColor(this.value)" style="width: 30px;">
+                
+                <div id="color-palette" style="display: flex; gap: 5px;">
+                    <button class="color-option active" style="background-color: #000;" onclick="setColor('#000', this)"></button>
+                    <button class="color-option" style="background-color: #f00;" onclick="setColor('#f00', this)"></button>
+                    <button class="color-option" style="background-color: #0d47a1;" onclick="setColor('#0d47a1', this)"></button>
+                    <button class="color-option" style="background-color: #0c8;" onclick="setColor('#0c8', this)"></button>
+                </div>
+            </div>
+
+            <div class="tool-group" style="border-right: none;">
+                <button class="tool-button" onclick="clearCanvas()" title="Tout effacer"><i class="fas fa-trash-alt"></i></button>
+                <button class="tool-button" onclick="zoomIn()" title="Zoomer (+)">
+                    <i class="fas fa-search-plus"></i>
+                </button>
+                <button class="tool-button" onclick="zoomOut()" title="Dézoomer (-)">
+                    <i class="fas fa-search-minus"></i>
+                </button>
+                <button class="tool-button" onclick="resetZoom()" title="Réinitialiser le zoom">1:1</button>
+            </div>
+            
+        </div>
+
+        <canvas id="drawing-canvas"></canvas>
+        
+        <textarea id="text-input" placeholder="Écrivez votre texte ici..."></textarea>
+
+    </div>
+
+    <script>
+        const canvas = document.getElementById('drawing-canvas');
+        const ctx = canvas.getContext('2d');
+        const textInput = document.getElementById('text-input');
+        const toolbar = document.querySelector('.toolbar');
+        
+        // --- PROPRIÉTÉS DE BASE ---
+        let currentTool = 'pen';
+        let isDrawing = false;
+        let lineWidth = 5;
+        let strokeColor = '#000';
+        let startX, startY; // Pour le dessin et les formes
+        
+        // --- GESTION DU ZOOM / PAN (Le cœur de l'interactivité) ---
+        let scale = 1.0;
+        let translateX = 0;
+        let translateY = 0;
+        const zoomFactor = 1.1;
+        
+        // Un array pour stocker toutes les actions (pour le redessin et le zoom)
+        // Format: { type: 'line'|'rect'|'circle'|'text', data: [...], style: {...} }
+        let history = []; 
+
+        // ----------------------------------------------------
+        // 1. INITIALISATION ET REDESSIN (DRAWING / ZOOM)
+        // ----------------------------------------------------
+
+        // Ajuste la taille du canvas à celle du conteneur
+        function resizeCanvas() {
+            canvas.width = canvas.clientWidth;
+            canvas.height = canvas.clientHeight;
+            drawAll();
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        // Applique les transformations de zoom/panoramique et redessine tout
+        function drawAll() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height); // Efface l'écran
+
+            // Appliquer les transformations
+            ctx.save();
+            ctx.translate(translateX, translateY);
+            ctx.scale(scale, scale);
+            
+            // Dessiner tous les éléments de l'historique
+            history.forEach(item => {
+                ctx.strokeStyle = item.style.color;
+                ctx.fillStyle = item.style.color;
+                ctx.lineWidth = item.style.width;
+                ctx.lineCap = 'round';
+                ctx.lineJoin = 'round';
+                ctx.font = item.style.font; // Pour le texte
+                
+                switch(item.type) {
+                    case 'line':
+                        ctx.beginPath();
+                        ctx.moveTo(item.data[0].x, item.data[0].y);
+                        for (let i = 1; i < item.data.length; i++) {
+                            ctx.lineTo(item.data[i].x, item.data[i].y);
+                        }
+                        ctx.stroke();
+                        break;
+                    case 'rect':
+                        ctx.strokeRect(item.data.x, item.data.y, item.data.width, item.data.height);
+                        break;
+                    case 'circle':
+                        ctx.beginPath();
+                        ctx.arc(item.data.x, item.data.y, item.data.radius, 0, Math.PI * 2);
+                        ctx.stroke();
+                        break;
+                    case 'text':
+                        ctx.fillText(item.data.text, item.data.x, item.data.y);
+                        break;
+                    case 'erase': // L'outil gomme est traité comme un tracé blanc
+                        ctx.strokeStyle = '#fff';
+                        ctx.beginPath();
+                        ctx.moveTo(item.data[0].x, item.data[0].y);
+                        for (let i = 1; i < item.data.length; i++) {
+                            ctx.lineTo(item.data[i].x, item.data[i].y);
+                        }
+                        ctx.stroke();
+                        break;
+                }
+            });
+
+            ctx.restore(); // Réinitialiser les transformations pour le prochain dessin
+        }
+
+
+        // ----------------------------------------------------
+        // 2. OUTILS ET ÉVÉNEMENTS (DESSIN, GOMME, FORMES)
+        // ----------------------------------------------------
+
+        // Convertit les coordonnées de l'écran en coordonnées du tableau (avec zoom/pan)
+        function getTransformedCoords(e) {
+            const rect = canvas.getBoundingClientRect();
+            const clientX = e.clientX || (e.touches ? e.touches[0].clientX : 0);
+            const clientY = e.clientY || (e.touches ? e.touches[0].clientY : 0);
+            
+            // Coordonnées relatives au canvas
+            const x = clientX - rect.left;
+            const y = clientY - rect.top;
+
+            // Appliquer la transformation inverse
+            const invScale = 1 / scale;
+            const tx = (x - translateX) * invScale;
+            const ty = (y - translateY) * invScale;
+            
+            return { x: tx, y: ty };
+        }
+        
+        // Au début du clic
+        canvas.addEventListener('mousedown', startAction);
+        canvas.addEventListener('touchstart', startAction);
+        
+        function startAction(e) {
+            if (currentTool === 'text') {
+                return handleTextClick(e);
+            }
+            
+            e.preventDefault();
+            isDrawing = true;
+            const { x, y } = getTransformedCoords(e);
+            startX = x;
+            startY = y;
+
+            if (currentTool === 'pen' || currentTool === 'eraser') {
+                const type = currentTool === 'eraser' ? 'erase' : 'line';
+                const action = {
+                    type: type,
+                    data: [{ x, y }],
+                    style: { 
+                        width: lineWidth, 
+                        color: currentTool === 'eraser' ? '#fff' : strokeColor 
+                    }
+                };
+                history.push(action);
+            }
+        }
+
+        // Pendant le mouvement de la souris
+        canvas.addEventListener('mousemove', moveAction);
+        canvas.addEventListener('touchmove', moveAction);
+
+        function moveAction(e) {
+            if (!isDrawing) return;
+            e.preventDefault();
+
+            const { x, y } = getTransformedCoords(e);
+
+            if (currentTool === 'pen' || currentTool === 'eraser') {
+                // Pour le dessin et la gomme (tracé continu)
+                const currentAction = history[history.length - 1];
+                currentAction.data.push({ x, y });
+                drawAll(); // Redessine tout l'historique
+            } else if (currentTool === 'rectangle' || currentTool === 'circle') {
+                // Pour les formes (prévisualisation)
+                drawAll(); // Nettoie et redessine l'historique
+                drawShapePreview(x, y); // Dessine la forme temporaire
+            }
+        }
+        
+        // À la fin du clic
+        canvas.addEventListener('mouseup', endAction);
+        canvas.addEventListener('touchend', endAction);
+
+        function endAction(e) {
+            if (!isDrawing) return;
+            isDrawing = false;
+            
+            const { x, y } = getTransformedCoords(e);
+
+            if (currentTool === 'rectangle') {
+                const action = {
+                    type: 'rect',
+                    data: { x: startX, y: startY, width: x - startX, height: y - startY },
+                    style: { width: lineWidth, color: strokeColor }
+                };
+                history.push(action);
+            } else if (currentTool === 'circle') {
+                const radius = Math.sqrt(Math.pow(x - startX, 2) + Math.pow(y - startY, 2));
+                const action = {
+                    type: 'circle',
+                    data: { x: startX, y: startY, radius: radius },
+                    style: { width: lineWidth, color: strokeColor }
+                };
+                history.push(action);
+            }
+            
+            drawAll();
+        }
+
+        // Dessin de la forme temporaire (lors du moveAction)
+        function drawShapePreview(currentX, currentY) {
+            ctx.save();
+            ctx.translate(translateX, translateY);
+            ctx.scale(scale, scale);
+            ctx.strokeStyle = strokeColor;
+            ctx.lineWidth = lineWidth;
+            ctx.lineCap = 'round';
+            ctx.lineJoin = 'round';
+
+            if (currentTool === 'rectangle') {
+                const width = currentX - startX;
+                const height = currentY - startY;
+                ctx.strokeRect(startX, startY, width, height);
+            } else if (currentTool === 'circle') {
+                const radius = Math.sqrt(Math.pow(currentX - startX, 2) + Math.pow(currentY - startY, 2));
+                ctx.beginPath();
+                ctx.arc(startX, startY, radius, 0, Math.PI * 2);
+                ctx.stroke();
+            }
+            ctx.restore();
+        }
+
+        // ----------------------------------------------------
+        // 3. OUTILS ET PROPRIÉTÉS
+        // ----------------------------------------------------
+
+        // Sélection de l'outil
+        document.querySelectorAll('.tool-button').forEach(button => {
+            button.addEventListener('click', () => {
+                // Désactive l'état actif de tous les boutons
+                document.querySelectorAll('.tool-button').forEach(btn => btn.classList.remove('active'));
+                
+                currentTool = button.dataset.tool;
+                button.classList.add('active');
+                
+                // Masquer le champ de texte si l'outil n'est pas "text"
+                if (currentTool !== 'text') {
+                    textInput.style.display = 'none';
+                    canvas.style.cursor = currentTool === 'eraser' ? 'none' : 'crosshair';
+                } else {
+                    canvas.style.cursor = 'text';
+                }
+            });
+        });
+
+        function setLineWidth(value) {
+            lineWidth = parseInt(value);
+        }
+
+        function setColor(color, element) {
+            strokeColor = color;
+            document.querySelectorAll('.color-option').forEach(btn => btn.classList.remove('active'));
+            if (element) {
+                 element.classList.add('active');
+            }
+            document.getElementById('colorPicker').value = color;
+        }
+
+        function clearCanvas() {
+            if (confirm('Êtes-vous sûr de vouloir tout effacer ? Cette action est irréversible.')) {
+                history = [];
+                drawAll();
+            }
+        }
+        
+        // ----------------------------------------------------
+        // 4. GESTION DU TEXTE
+        // ----------------------------------------------------
+        
+        function handleTextClick(e) {
+            const { x, y } = getTransformedCoords(e);
+            
+            // Placer le champ de saisie à la position du clic (coordonnées de l'écran)
+            const rect = canvas.getBoundingClientRect();
+            textInput.style.left = (e.clientX || e.touches[0].clientX) + 'px';
+            textInput.style.top = (e.clientY || e.touches[0].clientY) + 'px';
+            textInput.style.display = 'block';
+            textInput.focus();
+            
+            // Événement pour valider le texte (quand l'utilisateur appuie sur Entrée ou clique ailleurs)
+            textInput.onblur = textInput.onkeydown = function(event) {
+                if (event.type === 'blur' || event.key === 'Enter') {
+                    const text = textInput.value.trim();
+                    if (text) {
+                        const fontSize = lineWidth * 4; // Taille de police basée sur l'épaisseur
+                        
+                        const action = {
+                            type: 'text',
+                            data: { text: text, x: x, y: y + fontSize / 4 }, // Ajustement vertical
+                            style: { 
+                                color: strokeColor, 
+                                font: `${fontSize}px Arial, sans-serif` // Paramètres de texte
+                            }
+                        };
+                        history.push(action);
+                        drawAll();
+                    }
+                    textInput.value = '';
+                    textInput.style.display = 'none';
+                    currentTool = 'pen'; // Revenir au crayon après l'écriture
+                    document.getElementById('tool-pen').click();
+                }
+            };
+        }
+
+
+        // ----------------------------------------------------
+        // 5. ZOOM ET PANORAMIQUE
+        // ----------------------------------------------------
+
+        function zoom(delta) {
+            const oldScale = scale;
+            scale *= delta;
+            
+            // Pour que le zoom soit centré (maintenir le centre de l'écran)
+            translateX = canvas.width / 2 - (canvas.width / 2 - translateX) * (scale / oldScale);
+            translateY = canvas.height / 2 - (canvas.height / 2 - translateY) * (scale / oldScale);
+            
+            drawAll();
+        }
+
+        function zoomIn() {
+            zoom(zoomFactor);
+        }
+
+        function zoomOut() {
+            zoom(1 / zoomFactor);
+        }
+        
+        function resetZoom() {
+            scale = 1.0;
+            translateX = 0;
+            translateY = 0;
+            drawAll();
+        }
+
+        // Événement pour le zoom avec la molette de la souris
+        canvas.addEventListener('wheel', (e) => {
+            e.preventDefault();
+            const delta = e.deltaY < 0 ? zoomFactor : 1 / zoomFactor;
+            zoom(delta);
+        });
+
+    </script>
+</body>
+</html>
