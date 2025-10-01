@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tableau Blanc Interactif Ambiant</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    
+    <style>
+        /* ------------------------------------- */
+        /* GÉNÉRAL & FOND ANIMÉ (Votre Style) */
+        /* ------------------------------------- */
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow: hidden; 
+            background-color: #000;
+            color: #fff;
+        }
+
+        .background-wave {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -2; /* Sous le tableau blanc */
+            background: linear-gradient(135deg, #0f1c2c, #000000, #0c436d);
+            background-size: 400% 400%;
+            animation: wave-motion 15s ease infinite alternate;
+        }
+
+        @keyframes wave-motion {
+            0% { background-position: 0% 0%; }
+            100% { background-position: 100% 100%; }
+        }
+
+        /* ------------------------------------- */
+        /* CONTENEUR DU TABLEAU BLANC */
+        /* ------------------------------------- */
+        .whiteboard-container {
+            width: 90vw; /* Utilise presque toute la largeur de l'écran */
+            height: 90vh; /* Utilise presque toute la hauteur de l'écran */
+            display: flex;
+            flex-direction: column;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            z-index: 10;
+        }
+        
+        /* Zone du Canvas (le tableau blanc lui-même) */
+        #drawing-canvas {
+            background-color: #fff; /* Le "tableau blanc" est blanc */
+            cursor: crosshair;
+            border-radius: 0 0 15px 15px;
+            flex-grow: 1;
+        }
+
+        /* ------------------------------------- */
+        /* BARRE D'OUTILS */
+        /* ------------------------------------- */
+        .toolbar {
+            display: flex;
+            flex-wrap: wrap;
+            padding: 10px 15px;
+            gap: 10px;
+            background: rgba(0, 0, 0, 0.3); /* Barre sombre/transparente */
+            border-radius: 15px 15px 0 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .tool-group {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            margin-right: 15px;
+            padding-right: 15px;
+            border-right: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .tool-button, .color-option {
+            background: none;
+            border: none;
+            color: #fff;
+            padding: 8px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.1s;
+            font-size: 1.1em;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .tool-button:hover:not(.active), .color-option:hover:not(.active) {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .tool-button.active {
+            background: #4da6ff;
+            color: #000;
+            box-shadow: 0 0 5px #4da6ff;
+        }
+
+        /* Couleurs */
+        .color-option {
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            padding: 0;
+            border: 2px solid transparent;
+        }
+
+        .color-option.active {
+            border-color: #4da6ff;
+            transform: scale(1.1);
+        }
+
+        /* Inputs */
+        .tool-input {
+            width: 60px;
+            padding: 5px;
+            border: 1px solid #4da6ff;
+            background-color: rgba(0, 0, 0, 0.5);
+            color: #fff;
+            border-radius: 5px;
+        }
+        
+        /* Champ de saisie de texte flottant */
+        #text-input {
+            position: absolute;
+            z-index: 100;
+            padding: 5px;
+            border: 1px solid #4da6ff;
+            background-color: rgba(0, 0, 0, 0.8);
+            color: #fff;
+            font-size: 16px;
+            display: none;
+            resize: none;
+        }
+
+        /* Bouton Accueil (Votre style) */
+        .home-button-wrapper {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            z-index: 11;
+        }
+
+        .home-button {
+            display: inline-flex;
+            align-items: center;
+            padding: 8px 15px;
+            text-decoration: none;
+            color: #fff;
+            background-color: rgba(77, 166, 255, 0.2);
+            border: 1px solid #4da6ff;
+            border-radius: 20px;
+            font-size: 0.9em;
+            font-weight: bold;
+            transition: background-color 0.3s, transform 0.3s;
+        }
+
+        .home-button:hover {
+            background-color: #4da6ff;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(77, 166, 255, 0.4);
+        }
+
+        .home-button i {
+            margin-right: 8px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="background-wave"></div>
+
+    <div class="home-button-wrapper">
+        <a href="accueil.html" class="home-button"><i class="fas fa-arrow-left"></i> Retour Accueil</a>
+    </div>
+
+</body>
+</html>
