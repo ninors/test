@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lecteur de Musique de Travail Ambiante</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    
+    <style>
+        /* ------------------------------------- */
+        /* GÉNÉRAL & FOND ANIMÉ */
+        /* ------------------------------------- */
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow: hidden; 
+            background-color: #000;
+            color: #fff; /* Couleur de texte par défaut */
+        }
+
+        .background-wave {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            
+            background: linear-gradient(135deg, #0f1c2c, #000000, #0c436d);
+            background-size: 400% 400%;
+            
+            animation: wave-motion 15s ease infinite alternate;
+        }
+
+        @keyframes wave-motion {
+            0% { background-position: 0% 0%; }
+            100% { background-position: 100% 100%; }
+        }
+
+        /* ------------------------------------- */
+        /* CONTENEUR DE L'INTERFACE & BOUTON ACCUEIL */
+        /* ------------------------------------- */
+        .interface-container {
+            width: 25%;
+            min-width: 320px;
+            max-width: 400px;
+            padding: 25px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            z-index: 10;
+        }
+
+        /* Style pour le nouveau bouton Accueil */
+        .home-button-wrapper {
+            text-align: right;
+            margin-bottom: 20px;
+        }
+
+        .home-button {
+            display: inline-flex;
+            align-items: center;
+            padding: 8px 15px;
+            text-decoration: none;
+            color: #fff;
+            background-color: rgba(77, 166, 255, 0.2); /* Bleu clair transparent */
+            border: 1px solid #4da6ff;
+            border-radius: 20px;
+            font-size: 0.9em;
+            font-weight: bold;
+            transition: background-color 0.3s, transform 0.3s;
+        }
+
+        .home-button:hover {
+            background-color: #4da6ff;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(77, 166, 255, 0.4);
+        }
+
+        .home-button i {
+            margin-right: 8px;
+        }
+
+        /* ------------------------------------- */
+        /* STYLES DES CONTRÔLES AUDIO (Maintenus et Ajustés) */
+        /* ------------------------------------- */
+
+        /* Masquer le lecteur YouTube (il sert uniquement d'audio de fond) */
+        #player {
+            position: absolute;
+            left: -9999px; /* Le décaler hors écran */
+            width: 1px;
+            height: 1px;
+            overflow: hidden;
+        }
+        
+        .audio-section {
+            padding-top: 5px;
+            text-align: center;
+        }
+
+        .current-track-title {
+            font-size: 1.1em;
+            font-weight: bold;
+            color: #fff;
+            margin-bottom: 15px;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
+            min-height: 20px;
+        }
+        
+        /* Grille pour les contrôles (Précédent, Play/Pause, Suivant) */
+        .icon-grid-controls {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr); 
+            gap: 10px;
+            justify-items: center;
+            align-items: center;
+        }
+
+        /* Styles des boutons */
+        .icon-button {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-decoration: none;
+            color: #fff;
+            cursor: pointer;
+            transition: transform 0.3s ease, color 0.3s ease;
+        }
+
+        .icon-button:hover {
+            transform: scale(1.05);
+            color: #4da6ff;
+        }
+
+        .icon-circle {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            background-color: #ffffff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            
+            box-shadow: 
+                0 6px 12px rgba(0, 0, 0, 0.4),
+                inset 0 0 10px rgba(255, 255, 255, 0.5);
+            transition: box-shadow 0.3s ease;
+        }
+
+        .icon-button:hover .icon-circle {
+            box-shadow: 
+                0 2px 4px rgba(0, 0, 0, 0.5),
+                inset 0 0 18px #4da6ff;
+        }
+
+        .icon-circle i {
+            font-size: 30px;
+            color: #0d47a1;
+            
+            text-shadow: 
+                1px 1px 1px rgba(0, 0, 0, 0.2), 
+                -1px -1px 1px rgba(255, 255, 255, 0.8);
+        }
+
+        .small-icon-circle {
+            width: 50px;
+            height: 50px;
+            margin: auto;
+        }
+        
+        .small-icon-circle i {
+            font-size: 20px;
+        }
+
+        .icon-label {
+            font-size: 0.85em;
+            font-weight: bold;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
+            margin-top: 8px;
+        }
+
+        /* Style pour la zone du volume */
+        .volume-control {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 25px;
+            color: #4da6ff;
+            padding-bottom: 10px;
+        }
+
+        .volume-slider {
+            width: 60%;
+            height: 5px;
+            -webkit-appearance: none;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .volume-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 15px;
+            height: 15px;
+            border-radius: 50%;
+            background: #4da6ff;
+            cursor: pointer;
+            box-shadow: 0 0 5px rgba(77, 166, 255, 0.7);
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="background-wave"></div>
+
+    <div class="interface-container">
+        
+       <div class="home-button-wrapper">
+    <a href="accueil.html" class="home-button"><i class="fas fa-arrow-left"></i> Retour Accueil</a>
+</div>
+        <div class="audio-section">
+            <div class="current-track-title" id="current-track-title">Lecteur Musique Ambiante</div>
+            
+            <div class="icon-grid-controls">
+                <div class="icon-button" onclick="previousTrack()">
+                    <div class="icon-circle small-icon-circle"><i class="fas fa-backward"></i></div>
+                    <span class="icon-label">Précédent</span>
+                </div>
+                
+                <div class="icon-button" onclick="playPauseMusic()">
+                    <div class="icon-circle">
+                        <i id="play-pause-icon" class="fas fa-play"></i>
+                    </div>
+                    <span class="icon-label">Lecture</span>
+                </div>
+                
+                <div class="icon-button" onclick="nextTrack()">
+                    <div class="icon-circle small-icon-circle"><i class="fas fa-forward"></i></div>
+                    <span class="icon-label">Suivant</span>
+                </div>
+            </div>
+
+            <div class="volume-control">
+                <i class="fas fa-volume-down"></i>
+                <input type="range" min="0" max="100" value="20" class="volume-slider" id="volume-slider">
+                <i class="fas fa-volume-up"></i>
+            </div>
+        </div>
+
+    </div>
+
+    <div id="player"></div>
+
+    <script>
+        // 1. Définition de la playlist étendue
+        // J'ai utilisé des identifiants de vidéos YouTube pour simuler la musique de travail.
+        const playlist = [
+            // Vos musiques d'origine
+            { title: "Travail Calme (Ambiant)", id: "9TGlc0Fufgk" },
+            { title: "Piano Embiant (Relax)", id: "YBfZx2aF7xs" },
+            { title: "Lyrics (Indie/Pop)", id: "SVRALfdNqHI" },
+            
+            // Nouvelles options de musiques de travail
+            { title: "Code & Focus (Lofi)", id: "jfKfPfyBkOY" },
+            { title: "Concentration Profonde", id: "l7PV0sN4v14" },
+            { title: "Musique Classique Focus", id: "5sC8g17D7F4" },
+            { title: "Bruit Blanc Léger", id: "nM0W68mQ04Q" }
+        ];
+        let currentTrackIndex = 0;
+        let player; 
+
+        // 2. Chargement asynchrone de l'API YouTube Iframe
+        var tag = document.createElement('script');
+        tag.src = "https://www.youtube.com/iframe_api";
+        var firstScriptTag = document.getElementsByTagName('script')[0];
+        firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+
+        // 3. Cette fonction est appelée par l'API après son chargement
+        function onYouTubeIframeAPIReady() {
+            player = new YT.Player('player', {
+                height: '1',
+                width: '1',
+                videoId: playlist[currentTrackIndex].id,
+                playerVars: {
+                    'controls': 0,
+                    'disablekb': 1,
+                    'autoplay': 0,
+                    'loop': 1,
+                    'playlist': playlist[currentTrackIndex].id // Nécessaire pour le loop
+                },
+                events: {
+                    'onReady': onPlayerReady,
+                    'onStateChange': onPlayerStateChange
+                }
+            });
+            updateTitle();
+        }
+
+        // 4. Une fois le lecteur prêt
+        function onPlayerReady(event) {
+            const volumeSlider = document.getElementById('volume-slider');
+            const defaultVolume = parseInt(volumeSlider.value); // 20 par défaut
+
+            // Réglage du volume initial à 20%
+            event.target.setVolume(defaultVolume);
+
+            // Liaison du slider de volume
+            volumeSlider.addEventListener('input', function() {
+                player.setVolume(this.value);
+            });
+        }
+        
+        // 5. Mise à jour de l'icône Play/Pause et gestion de la fin de vidéo
+        function onPlayerStateChange(event) {
+            const icon = document.getElementById('play-pause-icon');
+            
+            // État 1: Playing (Lecture)
+            if (event.data == YT.PlayerState.PLAYING) {
+                icon.classList.remove('fa-play');
+                icon.classList.add('fa-pause');
+            } 
+            // État 2: Paused (Pause) ou -1: Unstarted
+            else if (event.data == YT.PlayerState.PAUSED || event.data == YT.PlayerState.UNSTARTED) {
+                icon.classList.remove('fa-pause');
+                icon.classList.add('fa-play');
+            } 
+            // État 0: Ended (Fin de la vidéo) -> passe à la piste suivante
+            else if (event.data == YT.PlayerState.ENDED) {
+                nextTrack();
+            }
+        }
+
+        // 6. Fonction pour mettre en pause/lecture
+        function playPauseMusic() {
+            if (!player) return;
+
+            const playerState = player.getPlayerState();
+            
+            if (playerState === YT.PlayerState.PLAYING) {
+                player.pauseVideo();
+            } else {
+                player.playVideo(); 
+            }
+        }
+        
+        // 7. Fonction pour la piste suivante
+        function nextTrack() {
+            currentTrackIndex = (currentTrackIndex + 1) % playlist.length;
+            loadTrack();
+        }
+
+        // 8. Fonction pour la piste précédente
+        function previousTrack() {
+            currentTrackIndex = (currentTrackIndex - 1 + playlist.length) % playlist.length;
+            loadTrack();
+        }
+
+        // 9. Fonction pour charger une piste et mettre à jour le titre
+        function loadTrack() {
+            if (player) {
+                // Charge la nouvelle vidéo et assure la lecture
+                player.loadVideoById(playlist[currentTrackIndex].id);
+                player.setLoop(true); 
+            }
+            updateTitle();
+        }
+
+        // 10. Mise à jour du titre affiché
+        function updateTitle() {
+            document.getElementById('current-track-title').textContent = playlist[currentTrackIndex].title;
+        }
+
+    </script>
+</body>
+</html>
