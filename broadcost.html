@@ -1,0 +1,167 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Simple Window Share (HTML minimal)</title>
+<style>
+  body{font-family:system-ui,Segoe UI,Arial;background:#071025;color:#e6eef8;padding:16px}
+  button{padding:8px 12px;border-radius:8px;border:0;background:#2563eb;color:#fff;cursor:pointer}
+  button.warn{background:#334155}
+  video{width:100%;max-width:1000px;border-radius:8px;background:#000}
+  .row{display:flex;gap:8px;align-items:center;margin-bottom:8px}
+  input{padding:8px;border-radius:8px;border:1px solid rgba(255,255,255,0.06);background:transparent;color:inherit}
+  .hint{color:#9fb6d9;font-size:0.9rem}
+</style>
+</head>
+<body>
+  <h2>Partage de fenêtre — version ultra-simple</h2>
+  <div class="row">
+    <button id="start">Démarrer capture (sélectionner une fenêtre)</button>
+    <button id="stop" class="warn" disabled>Arrêter</button>
+    <input id="wsHost" placeholder="Signaling host (ex: 192.168.1.10:8080) — vide = même hôte" style="width:350px"/>
+  </div>
+  <div class="hint">Ouvre cette page sur le PC qui partage en <code>http://localhost:PORT</code> pour autoriser la sélection sans HTTPS.</div>
+
+  <h3>Preview locale</h3>
+  <video id="local" autoplay muted playsinline></video>
+
+<script>
+/*
+ Minimal broadcaster-only HTML.
+ Assumptions:
+  - Signaling WebSocket available at ws(s)://<host>/ws
+  - Server routes messages (JSON) between clients. Messages used:
+    {type:'watch', from: viewerId}               // viewer asks to watch (forward to broadcaster)
+    {type:'offer', from: broadcasterId, to: viewerId, sdp:...}
+    {type:'answer', from: viewerId, to: broadcasterId, sdp:...}
+    {type:'ice', from: senderId, to: targetId, candidate:...}
+    {type:'bye', from: id}
+  - Server may optionally assign ids; this client self-generates an id and announces it.
+*/
+
+const startBtn = document.getElementById('start');
+const stopBtn = document.getElementById('stop');
+const wsHostInput = document.getElementById('wsHost');
+const localV = document.getElementById('local');
+
+let localStream = null;
+let ws = null;
+let myId = 'b-' + Math.random().toString(36).slice(2,9);
+const pcs = new Map(); // viewerId -> RTCPeerConnection
+const STUN = { urls: ['stun:stun.l.google.com:19302'] };
+
+function wsUrl(host){
+  if(!host) host = location.host;
+  const proto = location.protocol === 'https:' ? 'wss' : 'ws';
+  return proto + '://' + host + '/ws';
+}
+
+function openWS(host){
+  if(ws && ws.readyState===WebSocket.OPEN) return Promise.resolve(ws);
+  return new Promise((res, rej)=>{
+    ws = new WebSocket(wsUrl(host));
+    ws.onopen = ()=>{ console.log('WS open'); send({type:'announce', role:'broadcaster', id: myId}); res(ws); };
+    ws.onmessage = ev => { try{ const m = JSON.parse(ev.data); onSignal(m); }catch(e){console.warn(e);} };
+    ws.onclose = ()=>console.log('WS closed');
+    ws.onerror = e=>{ console.warn('WS err',e); rej(e); };
+  });
+}
+
+function send(obj){
+  if(!ws || ws.readyState!==WebSocket.OPEN) return;
+  ws.send(JSON.stringify(obj));
+}
+
+/* --- SIGNALING HANDLING --- */
+async function onSignal(msg){
+  // when server forwards {type:'watch', from:viewerId}, create pc for that viewer and send offer
+  if(msg.type === 'watch' && msg.from){
+    createPeerForViewer(msg.from);
+  } else if(msg.type === 'answer' && msg.from && msg.sdp){
+    const pc = pcs.get(msg.from);
+    if(pc) pc.setRemoteDescription(msg.sdp).catch(e=>console.warn(e));
+  } else if(msg.type === 'ice' && msg.from && msg.candidate){
+    const pc = pcs.get(msg.from);
+    if(pc){
+      try{ await pc.addIceCandidate(msg.candidate); }catch(e){ console.warn(e); }
+    }
+  } else if(msg.type === 'bye' && msg.from){
+    const pc = pcs.get(msg.from);
+    if(pc){ pc.close(); pcs.delete(msg.from); console.log('Viewer left', msg.from); }
+  }
+}
+
+/* --- BROADCAST LOGIC --- */
+async function startCapture(){
+  try{
+    localStream = await navigator.mediaDevices.getDisplayMedia({video:{cursor:"always"}, audio:true});
+  }catch(e){
+    alert('Erreur getDisplayMedia: ' + e.message);
+    return;
+  }
+  localV.srcObject = localStream;
+  stopBtn.disabled = false;
+  startBtn.disabled = true;
+  // ensure ws open
+  const host = wsHostInput.value.trim() || null;
+  try{ await openWS(host); }catch(e){ console.warn('WS open fail', e); }
+  // stop when user stops sharing via browser UI
+  localStream.getVideoTracks().forEach(t => t.onended = () => stopAll());
+  console.log('Capturing, id=', myId);
+}
+
+function stopAll(){
+  if(localStream){
+    localStream.getTracks().forEach(t=>t.stop());
+    localStream = null;
+    localV.srcObject = null;
+  }
+  pcs.forEach((pc, id)=>{ try{ pc.close(); }catch(e){} });
+  pcs.clear();
+  stopBtn.disabled = true;
+  startBtn.disabled = false;
+  // notify server optionally
+  if(ws && ws.readyState===WebSocket.OPEN) send({type:'announce', role:'stopped', id: myId});
+}
+
+/* Create a peer for a viewer who requested watch */
+async function createPeerForViewer(viewerId){
+  if(!localStream) { console.warn('No local stream to share'); return; }
+  if(pcs.has(viewerId)){ console.log('pc exists for', viewerId); return; }
+  const pc = new RTCPeerConnection({iceServers:[STUN]});
+  pcs.set(viewerId, pc);
+
+  // add tracks
+  localStream.getTracks().forEach(track => pc.addTrack(track, localStream));
+
+  pc.onicecandidate = e => {
+    if(e.candidate) send({type:'ice', from: myId, to: viewerId, candidate: e.candidate});
+  };
+  pc.onconnectionstatechange = () => {
+    if(pc.connectionState==='failed' || pc.connectionState==='closed' || pc.connectionState==='disconnected'){
+      pc.close(); pcs.delete(viewerId);
+    }
+  };
+
+  try{
+    const offer = await pc.createOffer();
+    await pc.setLocalDescription(offer);
+    send({type:'offer', from: myId, to: viewerId, sdp: pc.localDescription});
+    console.log('Offer sent to', viewerId);
+  }catch(e){
+    console.warn('Offer err', e);
+    pc.close(); pcs.delete(viewerId);
+  }
+}
+
+/* UI */
+startBtn.onclick = () => startCapture();
+stopBtn.onclick = () => stopAll();
+
+/* close ws on unload */
+window.addEventListener('beforeunload', ()=>{ if(ws) ws.close(); });
+
+</script>
+</body>
+</html>
