@@ -1,0 +1,23 @@
+[
+  {
+    "id": "job_001",
+    "title": "Développeur Full-Stack JavaScript",
+    "location": "Paris (75) - Hybride",
+    "type": "CDI",
+    "description": "Nous recherchons un développeur Full-Stack expérimenté sur Node.js et React pour rejoindre notre équipe technique et participer au scale de notre application phare."
+  },
+  {
+    "id": "job_002",
+    "title": "Designer UX/UI Junior",
+    "location": "Lyon (69) - Sur site",
+    "type": "Alternance",
+    "description": "Tu intégreras l'équipe produit pour concevoir des interfaces intuitives et percutantes. Une première expérience avec Figma est vivement souhaitée."
+  },
+  {
+    "id": "job_003",
+    "title": "Product Owner F/H",
+    "location": "Bordeaux (33) - Full Remote",
+    "type": "CDD",
+    "description": "En tant que PO, vous ferez le pont entre l'équipe métier et l'équipe tech. Vous rédigerez les user stories et gérerez le backlog produit avec méthode."
+  }
+]
