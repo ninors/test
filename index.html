@@ -405,25 +405,6 @@
     </header>
 
     <main>
-        <!-- STATUS CARD -->
-        <div class="card">
-            <div class="status-container">
-                <div class="status-indicator">
-                    <span id="bridge-dot" class="dot"></span>
-                    <span>Pont WebSocket</span>
-                </div>
-                <div class="status-indicator">
-                    <span id="sim-dot" class="dot"></span>
-                    <span>FSUIPC / Simu</span>
-                </div>
-            </div>
-
-            <div class="conn-setup">
-                <input type="text" id="server-ip" placeholder="Adresse IP du PC Simu (ex: 192.168.1.50)">
-                <button id="btn-connect" class="btn">Connexion</button>
-            </div>
-        </div>
-
         <!-- CONTROLS CARD -->
         <div class="card">
             <!-- Systems Buttons (Airbus Style) -->
@@ -489,14 +470,8 @@
 
     <script>
         let ws = null;
-        let heartBeatInterval = null;
 
         // UI Elements
-        const serverIpInput = document.getElementById('server-ip');
-        const btnConnect = document.getElementById('btn-connect');
-        const bridgeDot = document.getElementById('bridge-dot');
-        const simDot = document.getElementById('sim-dot');
-        
         const btnPbSystem = document.getElementById('btn-pb-system');
         const lblPbSystem = document.getElementById('lbl-pb-system');
         const btnPbTug = document.getElementById('btn-pb-tug');
@@ -521,43 +496,37 @@
         let pbSystemEnabled = false;
         let tugConnected = false;
 
-        // Load saved IP
-        const savedIp = localStorage.getItem('pushback_bridge_ip');
-        if (savedIp) {
-            serverIpInput.value = savedIp;
-        } else {
-            // Auto detect if page is loaded from our server
-            const hostname = window.location.hostname;
-            if (hostname && hostname !== 'localhost' && hostname !== '127.0.0.1') {
-                serverIpInput.value = hostname;
-            } else {
-                serverIpInput.value = '127.0.0.1';
+        async function getRemoteIP() {
+            try {
+                const response = await fetch('https://keyvalue.immanuel.co/api/KeyVal/GetValue/kotew_pb/local_ip');
+                if (response.ok) {
+                    let data = await response.text();
+                    data = data.replace(/^"|"$/g, '');
+                    return data.trim();
+                }
+            } catch (e) {
+                console.warn("Impossible de recuperer l'IP via keyvalue registry:", e);
             }
+            return null;
         }
 
         // Connection logic
-        function connect() {
-            const ip = serverIpInput.value.trim() || 'localhost';
-            localStorage.setItem('pushback_bridge_ip', ip);
-            
-            btnConnect.textContent = 'Connexion...';
-            btnConnect.disabled = true;
-
+        async function connect() {
             if (ws) {
-                ws.close();
+                try { ws.close(); } catch(e) {}
             }
 
-            // Connect to our C# Bridge WS
+            // Get target IP dynamically
+            let ip = await getRemoteIP();
+            if (!ip) {
+                ip = window.location.hostname || '127.0.0.1';
+            }
+
+            console.log(`[INFO] Connexion au pont PushbackBridge sur ws://${ip}:8001/ws...`);
             ws = new WebSocket(`ws://${ip}:8001/ws`);
 
             ws.onopen = () => {
-                bridgeDot.classList.add('connected');
-                btnConnect.textContent = 'Déconnecter';
-                btnConnect.disabled = false;
-                btnConnect.classList.add('btn-danger');
-                console.log('Connecté au pont PushbackBridge');
-                
-                // Initialize request
+                console.log('[SUCCES] Connecte au pont PushbackBridge');
                 sendMessage({ command: "init" });
             };
 
@@ -571,13 +540,9 @@
             };
 
             ws.onclose = () => {
-                bridgeDot.classList.remove('connected');
-                simDot.classList.remove('connected');
-                btnConnect.textContent = 'Connexion';
-                btnConnect.disabled = false;
-                btnConnect.classList.remove('btn-danger');
+                console.log('Pont deconnecte. Nouvelle tentative dans 5 secondes...');
                 resetUIState();
-                console.log('Pont déconnecté');
+                setTimeout(connect, 5000);
             };
 
             ws.onerror = (err) => {
@@ -591,15 +556,6 @@
             }
         }
 
-        // Handle buttons
-        btnConnect.addEventListener('click', () => {
-            if (ws && ws.readyState === WebSocket.OPEN) {
-                ws.close();
-            } else {
-                connect();
-            }
-        });
-
         // Toggle FlyByWire Pushback system
         btnPbSystem.addEventListener('click', () => {
             const targetState = !pbSystemEnabled;
@@ -608,7 +564,6 @@
                 name: "set_pb_sys",
                 code: `${targetState ? 1 : 0} (>L:A32NX_PUSHBACK_SYSTEM_ENABLED, Number)`
             });
-            // Anticipate state change to make it feel responsive
             setPbSystemState(targetState);
         });
 
@@ -623,7 +578,6 @@
 
         // Set speed throttle
         function sendSpeed(val) {
-            // Speed factor is between -1.0 and 1.0
             const factor = (val / 100).toFixed(2);
             sendMessage({
                 command: "vars.calc",
@@ -631,17 +585,7 @@
                 code: `${factor} (>L:A32NX_PUSHBACK_SPD_FACTOR, Number)`
             });
             
-            // UI text update
-            if (val > 0) {
-                speedVal.textContent = `AVANT ${val}%`;
-                speedVal.style.color = '#3b82f6';
-            } else if (val < 0) {
-                speedVal.textContent = `ARRIÈRE ${Math.abs(val)}%`;
-                speedVal.style.color = '#f59e0b';
-            } else {
-                speedVal.textContent = 'STOP';
-                speedVal.style.color = '#ef4444';
-            }
+            updateSpeedDisplay(val);
         }
 
         speedSlider.addEventListener('input', (e) => {
@@ -655,7 +599,6 @@
 
         // Set steering wheel
         function sendSteering(val) {
-            // Steering factor is between -1.0 (left) and 1.0 (right)
             const factor = (val / 100).toFixed(2);
             sendMessage({
                 command: "vars.calc",
@@ -667,7 +610,6 @@
         }
 
         function updateSteerUI(val) {
-            // Update Text
             if (val > 0) {
                 steerVal.textContent = `DROITE ${val}%`;
                 steerVal.style.color = '#10b981';
@@ -679,9 +621,6 @@
                 steerVal.style.color = '#94a3b8';
             }
 
-            // Update joystick visual
-            // Base size: 140px, Handle size: 40px
-            // Available space for movement: (140 - 40) = 100px. Left range: 0px to 100px. Center: 50px
             const offset = 50 + (val / 100) * 50;
             joyHandle.style.left = `${offset}px`;
         }
@@ -703,7 +642,6 @@
             const baseCenterX = rect.left + rect.width / 2;
             let deltaX = clientX - baseCenterX;
             
-            // Limit to max offset (50px)
             const maxOffset = 50;
             if (deltaX > maxOffset) deltaX = maxOffset;
             if (deltaX < -maxOffset) deltaX = -maxOffset;
@@ -744,19 +682,12 @@
             isDraggingJoy = false;
         });
 
-
         // Process incoming bridge/FSUIPC messages
         function handleIncomingMessage(msg) {
-            // Check simulator connection status reported by the bridge
             if (msg.simConnected !== undefined) {
-                if (msg.simConnected) {
-                    simDot.classList.add('connected');
-                } else {
-                    simDot.classList.remove('connected');
-                }
+                console.log(`[INFO] Etat Simulateur : ${msg.simConnected ? 'CONNECTE' : 'DECONNECTE'}`);
             }
 
-            // Aircraft information
             if (msg.aircraft) {
                 simAircraft.textContent = msg.aircraft;
             }
@@ -768,7 +699,6 @@
                 simParkBrake.style.color = msg.parkingBrake ? "#ef4444" : "#10b981";
             }
 
-            // LVAR Values Updates (received from FSUIPC WebSocket Server via Bridge)
             if (msg.name !== undefined && msg.value !== undefined) {
                 if (msg.name === "L:A32NX_PUSHBACK_SYSTEM_ENABLED") {
                     setPbSystemState(msg.value === 1);
@@ -787,7 +717,6 @@
                 }
             }
 
-            // Standard pushback state checks (Tug connected)
             if (msg.pushbackState !== undefined) {
                 const isTugActive = msg.pushbackState < 3;
                 setTugState(isTugActive);
@@ -850,9 +779,9 @@
             updateSteerUI(0);
         }
 
-        // Auto connect on load if possible
+        // Auto connect on load
         window.addEventListener('DOMContentLoaded', () => {
-            setTimeout(connect, 500);
+            connect();
         });
     </script>
 </body>
