@@ -3,625 +3,856 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Minuteur Pomodoro Stylé 🍅✨ (Auto, Pro)</title>
-    
+    <title>A32NX Remote Pushback Controller</title>
     <style>
-        /* Importation d'une police Google Font pour un look moderne */
-        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap');
-        
-        body {
-            font-family: 'Montserrat', sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            /* Fond stylé et vibrant */
-            background: linear-gradient(135deg, #f06, #4a235a); /* Rouge/Magenta à Violet Profond */
-            color: white;
-            margin: 0;
-            padding: 20px;
-            transition: background 0.5s ease; /* Transition pour le changement de couleur */
+        :root {
+            --bg-color: #0b0f19;
+            --panel-bg: rgba(18, 26, 44, 0.7);
+            --border-color: rgba(43, 62, 98, 0.4);
+            --text-color: #e2e8f0;
+            --text-muted: #94a3b8;
+            --primary: #3b82f6;
+            --primary-hover: #2563eb;
+            --accent: #10b981;
+            --accent-hover: #059669;
+            --danger: #ef4444;
+            --danger-hover: #dc2626;
+            --active-bg: rgba(59, 130, 246, 0.15);
         }
 
-        .container {
-            background-color: rgba(255, 255, 255, 0.15); 
-            padding: 30px;
-            border-radius: 25px;
-            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.6); 
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, Helvetica, Arial, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            overflow-x: hidden;
+        }
+
+        header {
+            width: 100%;
+            max-width: 600px;
+            margin-bottom: 20px;
             text-align: center;
-            width: 90%;
-            max-width: 550px;
-            backdrop-filter: blur(10px); 
-            border: 1px solid rgba(255, 255, 255, 0.2);
         }
 
         h1 {
-            color: #fff;
-            margin-bottom: 15px;
-            font-size: 2.2em;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            font-size: 1.8rem;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            color: #ffffff;
+            margin-bottom: 5px;
         }
 
-        hr {
-            border: 0;
-            height: 1px;
-            background-image: linear-gradient(to right, rgba(255, 255, 255, 0), rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 0));
-            margin: 25px 0;
+        .subtitle {
+            font-size: 0.9rem;
+            color: var(--text-muted);
         }
 
-        /* --- Minuteur --- */
-        .timer-container {
-            margin: 30px 0;
+        main {
+            width: 100%;
+            max-width: 600px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
         }
 
-        #timer-display {
-            font-size: 6em;
-            font-weight: bold;
-            margin-bottom: 25px;
-            background: rgba(0, 0, 0, 0.4);
-            border-radius: 20px;
-            padding: 20px 40px;
-            display: inline-block;
-            letter-spacing: 6px;
-            transition: all 0.5s ease-in-out;
-            box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.5);
+        .card {
+            background: var(--panel-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 20px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
         }
 
-        /* Couleurs du Minuteur par Mode */
-        .mode-pomodoro #timer-display { color: #ff5e62; } /* Rouge pour le travail */
-        .mode-shortBreak #timer-display { color: #56c4e0; } /* Bleu pour la pause courte */
-        .mode-longBreak #timer-display { color: #4cd964; } /* Vert pour la pause longue */
-
-        /* --- Boutons de Contrôle --- */
-        button {
-            background-color: #ffc107; 
-            color: #333;
-            border: none;
-            padding: 14px 30px;
-            margin: 5px;
-            border-radius: 50px;
-            cursor: pointer;
-            font-size: 1.05em;
-            font-weight: 700;
-            transition: all 0.2s ease-in-out;
-            text-transform: uppercase;
+        .status-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 5px;
         }
 
-        button:hover {
-            background-color: #ffeb3b;
-            transform: translateY(-3px) scale(1.02);
-            box-shadow: 0 8px 20px rgba(255, 193, 7, 0.5);
-        }
-        
-        /* Styles spécifiques aux boutons de mode */
-        .mode-selector button {
-            background-color: rgba(255, 255, 255, 0.15);
-            color: white;
-            padding: 8px 15px;
-            border-radius: 15px;
-            font-weight: 400;
-            font-size: 0.9em;
-            text-transform: none;
-        }
-
-        .mode-selector button.active {
-            background-color: #ff5e62; 
-            box-shadow: 0 0 15px rgba(255, 94, 98, 0.8);
-            transform: scale(1.1);
-            font-weight: 700;
-        }
-        
-        /* --- Configuration & Récompenses --- */
-        .settings { margin-bottom: 10px; }
-        .settings input {
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            gap: 8px;
             padding: 10px;
-            border: none;
             border-radius: 8px;
-            background-color: rgba(255, 255, 255, 0.2);
-            color: white;
-            width: 100%;
-            box-sizing: border-box;
-            font-size: 1em;
-            display: block;
-            margin: 8px auto;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            font-size: 0.85rem;
         }
-        .settings label {
-            text-align: left;
-            margin-top: 10px;
-            font-size: 0.9em;
-            display: block;
+
+        .dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background-color: var(--danger);
+            box-shadow: 0 0 8px var(--danger);
+            transition: all 0.3s ease;
         }
-        
-        .settings #save-settings {
-            background-color: #28a745;
-            color: white;
-            width: 100%;
+
+        .dot.connected {
+            background-color: var(--accent);
+            box-shadow: 0 0 8px var(--accent);
+        }
+
+        .conn-setup {
+            display: flex;
+            gap: 10px;
             margin-top: 15px;
         }
-        
-        .settings #toggle-auto-start {
-            background-color: #17a2b8; 
+
+        input[type="text"] {
+            flex: 1;
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid var(--border-color);
+            padding: 10px 15px;
+            border-radius: 8px;
             color: white;
+            font-size: 0.9rem;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        input[type="text"]:focus {
+            border-color: var(--primary);
+        }
+
+        .btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 10px 18px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            font-size: 0.9rem;
+        }
+
+        .btn:hover {
+            background: var(--primary-hover);
+        }
+
+        .btn-danger {
+            background: var(--danger);
+        }
+
+        .btn-danger:hover {
+            background: var(--danger-hover);
+        }
+
+        .btn-success {
+            background: var(--accent);
+        }
+
+        .btn-success:hover {
+            background: var(--accent-hover);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--text-color);
+            border: 1px solid var(--border-color);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .control-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
             margin-top: 10px;
+        }
+
+        .control-block {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.03);
+            border-radius: 12px;
+            padding: 15px;
+        }
+
+        .control-title {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* Slider Styles */
+        .slider-container {
             width: 100%;
-            padding: 10px 20px;
-        }
-        .settings #toggle-auto-start.active {
-            background-color: #20c997; 
-            box-shadow: 0 0 10px rgba(32, 201, 151, 0.5);
-        }
-        
-        .rewards-section {
-            background-color: rgba(0, 0, 0, 0.3);
-            padding: 25px;
-            border-radius: 15px;
-            margin-top: 25px;
-        }
-        
-        #rewards-list {
-            text-align: left;
-            margin-top: 15px;
-            max-height: 180px;
-            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
         }
 
-        .reward-item {
-            font-size: 1.1em;
-            margin: 8px 0;
-            padding: 5px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-            animation: fadeIn 0.5s ease-out;
+        .slider-vertical {
+            height: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
         }
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        
-        #reward-notification {
-            color: #20c997; 
-            font-weight: bold; 
-            margin-bottom: 10px; 
-            display: none;
-            padding: 10px;
-            border: 2px solid #20c997;
-            border-radius: 10px;
+        input[type="range"].vertical {
+            writing-mode: vertical-lr;
+            direction: rtl;
+            width: 16px;
+            height: 180px;
+            background: rgba(0, 0, 0, 0.3);
+            outline: none;
+            border-radius: 8px;
         }
 
-        /* Responsive */
-        @media (max-width: 600px) {
-            #timer-display {
-                font-size: 5em;
-                padding: 15px 25px;
-            }
-            button {
-                padding: 10px 15px;
-                font-size: 0.9em;
-            }
-            .mode-selector button {
-                padding: 6px 10px;
-                font-size: 0.8em;
-            }
+        input[type="range"].horizontal {
+            width: 100%;
+            height: 8px;
+            background: rgba(0, 0, 0, 0.3);
+            outline: none;
+            border-radius: 4px;
+            -webkit-appearance: none;
+        }
+
+        input[type="range"].horizontal::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: var(--primary);
+            cursor: pointer;
+            box-shadow: 0 0 10px rgba(59, 130, 246, 0.5);
+            transition: background 0.1s;
+        }
+
+        input[type="range"].horizontal::-webkit-slider-thumb:active {
+            background: #60a5fa;
+        }
+
+        input[type="range"].vertical::-webkit-slider-thumb {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: var(--primary);
+            cursor: pointer;
+            box-shadow: 0 0 10px rgba(59, 130, 246, 0.5);
+        }
+
+        .value-display {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #ffffff;
+            font-family: monospace;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 4px 10px;
+            border-radius: 6px;
+            border: 1px solid var(--border-color);
+        }
+
+        .quick-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            width: 100%;
+        }
+
+        .action-row {
+            display: flex;
+            gap: 10px;
+            width: 100%;
+        }
+
+        .action-row .btn {
+            flex: 1;
+            padding: 12px;
+        }
+
+        /* Airbus Dashboard Button Styles */
+        .glass-btn {
+            background: rgba(18, 26, 44, 0.5);
+            border: 1px solid var(--border-color);
+            color: var(--text-color);
+            padding: 15px;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: center;
+            font-weight: 600;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+        }
+
+        .glass-btn:hover {
+            border-color: var(--primary);
+            background: rgba(59, 130, 246, 0.05);
+        }
+
+        .glass-btn.active {
+            background: var(--active-bg);
+            border-color: var(--primary);
+            color: #ffffff;
+            box-shadow: 0 0 15px rgba(59, 130, 246, 0.2);
+        }
+
+        .glass-btn .icon {
+            font-size: 1.5rem;
+        }
+
+        .glass-btn .label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-muted);
+        }
+
+        .glass-btn.active .label {
+            color: var(--primary);
+        }
+
+        .info-panel {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            line-height: 1.4;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            border-bottom: 1px dashed rgba(255, 255, 255, 0.05);
+            padding-bottom: 5px;
+        }
+
+        .info-value {
+            color: white;
+            font-weight: 500;
+        }
+
+        /* Joystick Visualiser */
+        .joystick-base {
+            width: 140px;
+            height: 140px;
+            border-radius: 50%;
+            background: rgba(0,0,0,0.4);
+            border: 2px solid var(--border-color);
+            position: relative;
+            margin: 10px 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .joystick-handle {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--primary);
+            box-shadow: 0 0 15px rgba(59, 130, 246, 0.8);
+            position: absolute;
+            cursor: pointer;
+            transition: transform 0.05s ease-out;
+        }
+
+        .crosshair-h {
+            width: 100%;
+            height: 1px;
+            background: rgba(255,255,255,0.1);
+            position: absolute;
+        }
+
+        .crosshair-v {
+            width: 1px;
+            height: 100%;
+            background: rgba(255,255,255,0.1);
+            position: absolute;
         }
     </style>
 </head>
-<body class="mode-pomodoro">
+<body>
 
-    <audio id="beep-sound" preload="auto" hidden></audio> 
-    
-    <div class="container">
-        <h1>Minuteur Pomodoro Stylé 🚀</h1>
+    <header>
+        <h1>A32NX Pushback Remote</h1>
+        <div class="subtitle">Contrôle à distance du pushback FlyByWire A320</div>
+    </header>
 
-        <button id="request-notification-permission">🔔 Autoriser les Notifications</button>
-
-        <div class="settings">
-            <label for="pomodoro-time">Pomodoro (min) :</label>
-            <input type="number" id="pomodoro-time" value="25" min="1">
-            <label for="short-break-time">Pause Courte (min) :</label>
-            <input type="number" id="short-break-time" value="5" min="1">
-            <label for="long-break-time">Pause Longue (min) :</label>
-            <input type="number" id="long-break-time" value="15" min="1">
-            <button id="save-settings">💾 Sauvegarder les Temps</button>
-            <button id="toggle-auto-start" class="active">🔁 Auto-Enchaînement : ON</button>
-        </div>
-
-        <hr>
-
-        <div class="mode-selector">
-            <button id="mode-pomodoro" class="active">🍅 Pomodoro</button>
-            <button id="mode-short-break">☕ Pause Courte</button>
-            <button id="mode-long-break">🏖️ Pause Longue</button>
-        </div>
-
-        <div class="timer-container">
-            <div id="timer-display">25:00</div>
-            <div class="controls">
-                <button id="start-btn">▶️ Démarrer</button>
-                <button id="pause-btn" style="display:none;">⏸️ Pause</button>
-                <button id="reset-btn">🔄 Réinitialiser</button>
+    <main>
+        <!-- STATUS CARD -->
+        <div class="card">
+            <div class="status-container">
+                <div class="status-indicator">
+                    <span id="bridge-dot" class="dot"></span>
+                    <span>Pont WebSocket</span>
+                </div>
+                <div class="status-indicator">
+                    <span id="sim-dot" class="dot"></span>
+                    <span>FSUIPC / Simu</span>
+                </div>
             </div>
-            <p id="session-counter">Pomodoros Terminés : 0</p>
-        </div>
 
-        <hr>
-
-        <div class="rewards-section">
-            <h2>🏆 Mes Récompenses Stylées</h2>
-            <p id="reward-notification" style="display: none;"></p>
-            <div id="rewards-list">
-                <p>Chargement des récompenses...</p>
+            <div class="conn-setup">
+                <input type="text" id="server-ip" placeholder="Adresse IP du PC Simu (ex: 192.168.1.50)">
+                <button id="btn-connect" class="btn">Connexion</button>
             </div>
         </div>
-    </div>
+
+        <!-- CONTROLS CARD -->
+        <div class="card">
+            <!-- Systems Buttons (Airbus Style) -->
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px;">
+                <button id="btn-pb-system" class="glass-btn">
+                    <span class="icon">⚙️</span>
+                    <span style="font-size: 0.95rem;">Système Pushback</span>
+                    <span id="lbl-pb-system" class="label">Désactivé</span>
+                </button>
+
+                <button id="btn-pb-tug" class="glass-btn">
+                    <span class="icon">🚜</span>
+                    <span style="font-size: 0.95rem;">Remorqueur (Tug)</span>
+                    <span id="lbl-pb-tug" class="label">Déconnecté</span>
+                </button>
+            </div>
+
+            <div class="control-grid">
+                <!-- SPEED THROTTLE -->
+                <div class="control-block">
+                    <span class="control-title">Vitesse (Throttle)</span>
+                    <div class="slider-vertical">
+                        <input type="range" id="pb-speed" class="vertical" min="-100" max="100" value="0">
+                    </div>
+                    <span id="pb-speed-val" class="value-display">0%</span>
+                    <button id="btn-stop" class="btn btn-danger" style="width: 100%;">STOP (0)</button>
+                </div>
+
+                <!-- STEERING -->
+                <div class="control-block">
+                    <span class="control-title">Direction (Steering)</span>
+                    <div class="joystick-base" id="joy-base">
+                        <div class="crosshair-h"></div>
+                        <div class="crosshair-v"></div>
+                        <div class="joystick-handle" id="joy-handle" style="left: 50px; top: 50px;"></div>
+                    </div>
+                    <div class="slider-container" style="margin-top: 10px;">
+                        <input type="range" id="pb-steer" class="horizontal" min="-100" max="100" value="0">
+                    </div>
+                    <span id="pb-steer-val" class="value-display">CENTRE</span>
+                    <button id="btn-center" class="btn btn-secondary" style="width: 100%;">CENTRE (0)</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- QUICK CONFIG & AIRFRAME INFO -->
+        <div class="card info-panel">
+            <h3 style="color: white; margin-bottom: 10px; font-size: 1rem;">Informations Simulateur</h3>
+            <div class="info-row">
+                <span>Appareil détecté:</span>
+                <span id="sim-aircraft" class="info-value">Inconnu</span>
+            </div>
+            <div class="info-row">
+                <span>Vitesse Sol (GS):</span>
+                <span id="sim-gs" class="info-value">0 kts</span>
+            </div>
+            <div class="info-row">
+                <span>Frein de Parc (Parking Brake):</span>
+                <span id="sim-park-brake" class="info-value">-</span>
+            </div>
+        </div>
+    </main>
 
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            // --- Éléments du DOM ---
-            const body = document.body;
-            const timerDisplay = document.getElementById('timer-display');
-            const startBtn = document.getElementById('start-btn');
-            const pauseBtn = document.getElementById('pause-btn');
-            const sessionCounter = document.getElementById('session-counter');
-            const rewardsList = document.getElementById('rewards-list');
-            const saveSettingsBtn = document.getElementById('save-settings');
-            const toggleAutoStartBtn = document.getElementById('toggle-auto-start');
-            const notificationBtn = document.getElementById('request-notification-permission');
-            const rewardNotification = document.getElementById('reward-notification');
+        let ws = null;
+        let heartBeatInterval = null;
 
-            // Modes
-            const modePomodoro = document.getElementById('mode-pomodoro');
-            const modeShortBreak = document.getElementById('mode-short-break');
-            const modeLongBreak = document.getElementById('mode-long-break');
+        // UI Elements
+        const serverIpInput = document.getElementById('server-ip');
+        const btnConnect = document.getElementById('btn-connect');
+        const bridgeDot = document.getElementById('bridge-dot');
+        const simDot = document.getElementById('sim-dot');
+        
+        const btnPbSystem = document.getElementById('btn-pb-system');
+        const lblPbSystem = document.getElementById('lbl-pb-system');
+        const btnPbTug = document.getElementById('btn-pb-tug');
+        const lblPbTug = document.getElementById('lbl-pb-tug');
+        
+        const speedSlider = document.getElementById('pb-speed');
+        const speedVal = document.getElementById('pb-speed-val');
+        const btnStop = document.getElementById('btn-stop');
+        
+        const steerSlider = document.getElementById('pb-steer');
+        const steerVal = document.getElementById('pb-steer-val');
+        const btnCenter = document.getElementById('btn-center');
+        
+        const joyBase = document.getElementById('joy-base');
+        const joyHandle = document.getElementById('joy-handle');
 
-            // --- Variables d'État ---
-            let intervalId = null;
-            let totalSeconds = 0;
-            let isPaused = true;
-            let currentMode = 'pomodoro'; 
-            let pomodoroCount = 0;
-            let autoStartEnabled = true;
+        const simAircraft = document.getElementById('sim-aircraft');
+        const simGs = document.getElementById('sim-gs');
+        const simParkBrake = document.getElementById('sim-park-brake');
 
-            // Définitions des temps (en minutes, valeurs par défaut)
-            let times = {
-                pomodoro: 25,
-                shortBreak: 5,
-                longBreak: 15
+        // State variables
+        let pbSystemEnabled = false;
+        let tugConnected = false;
+
+        // Load saved IP
+        const savedIp = localStorage.getItem('pushback_bridge_ip');
+        if (savedIp) {
+            serverIpInput.value = savedIp;
+        } else {
+            // Auto detect if page is loaded from our server
+            const hostname = window.location.hostname;
+            if (hostname && hostname !== 'localhost' && hostname !== '127.0.0.1') {
+                serverIpInput.value = hostname;
+            } else {
+                serverIpInput.value = '127.0.0.1';
+            }
+        }
+
+        // Connection logic
+        function connect() {
+            const ip = serverIpInput.value.trim() || 'localhost';
+            localStorage.setItem('pushback_bridge_ip', ip);
+            
+            btnConnect.textContent = 'Connexion...';
+            btnConnect.disabled = true;
+
+            if (ws) {
+                ws.close();
+            }
+
+            // Connect to our C# Bridge WS
+            ws = new WebSocket(`ws://${ip}:8001/ws`);
+
+            ws.onopen = () => {
+                bridgeDot.classList.add('connected');
+                btnConnect.textContent = 'Déconnecter';
+                btnConnect.disabled = false;
+                btnConnect.classList.add('btn-danger');
+                console.log('Connecté au pont PushbackBridge');
+                
+                // Initialize request
+                sendMessage({ command: "init" });
             };
 
-            // Liste des récompenses progressives
-            const allRewards = [
-                { emoji: '🌟', desc: 'Premier pas (Simple) !', required: 1 },
-                { emoji: '💡', desc: 'Concentration active !', required: 3 },
-                { emoji: '🔥', desc: 'En feu !', required: 5 },
-                { emoji: '🦾', desc: 'Robot de productivité (Difficile)', required: 8 },
-                { emoji: '👑', desc: 'Maître du temps', required: 12 },
-                { emoji: '💎', desc: 'Productivité Diamant (Très Difficile)', required: 16 },
-                { emoji: '🌌', desc: 'Vitesse de la lumière', required: 20 },
-            ];
-            let obtainedRewards = [];
-
-            // --- Fonctions Audio et Notifications ---
-
-            /**
-             * Joue un court bip sonore en utilisant l'API AudioContext (non bloquant).
-             */
-            function playBeep() {
+            ws.onmessage = (event) => {
                 try {
-                    const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-                    const oscillator = audioContext.createOscillator();
-                    const gainNode = audioContext.createGain();
-
-                    oscillator.connect(gainNode);
-                    gainNode.connect(audioContext.destination);
-
-                    oscillator.type = 'sine'; 
-                    oscillator.frequency.setValueAtTime(440, audioContext.currentTime); 
-                    
-                    gainNode.gain.setValueAtTime(0.5, audioContext.currentTime);
-                    gainNode.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + 0.4); 
-
-                    oscillator.start();
-                    oscillator.stop(audioContext.currentTime + 0.4);
+                    const data = JSON.parse(event.data);
+                    handleIncomingMessage(data);
                 } catch (e) {
-                    console.warn("Impossible de jouer le son AudioContext. Le navigateur peut bloquer l'API audio sans interaction utilisateur.");
+                    console.error("Erreur parsing message:", e);
                 }
+            };
+
+            ws.onclose = () => {
+                bridgeDot.classList.remove('connected');
+                simDot.classList.remove('connected');
+                btnConnect.textContent = 'Connexion';
+                btnConnect.disabled = false;
+                btnConnect.classList.remove('btn-danger');
+                resetUIState();
+                console.log('Pont déconnecté');
+            };
+
+            ws.onerror = (err) => {
+                console.error("Erreur WebSocket:", err);
+            };
+        }
+
+        function sendMessage(obj) {
+            if (ws && ws.readyState === WebSocket.OPEN) {
+                ws.send(JSON.stringify(obj));
             }
-            
-            /**
-             * Affiche une notification desktop si la permission est accordée.
-             * @param {string} title - Le titre de la notification.
-             * @param {string} body - Le corps du message.
-             */
-            function sendNotification(title, body) {
-                if ('Notification' in window && Notification.permission === 'granted') {
-                    new Notification(title, {
-                        body: body,
-                        icon: 'https://i.imgur.com/g8uXy7F.png' // Lien vers une image de tomate pour l'icône
-                    });
-                } else if ('Notification' in window && Notification.permission !== 'denied' && !isPaused) {
-                    // Tenter de demander la permission si le minuteur est en cours
-                    Notification.requestPermission();
-                }
+        }
+
+        // Handle buttons
+        btnConnect.addEventListener('click', () => {
+            if (ws && ws.readyState === WebSocket.OPEN) {
+                ws.close();
+            } else {
+                connect();
             }
+        });
 
-            function requestNotificationPermission() {
-                if ('Notification' in window) {
-                    Notification.requestPermission().then(permission => {
-                        if (permission === 'granted') {
-                            notificationBtn.textContent = '🔔 Notifications ON';
-                            notificationBtn.disabled = true;
-                        } else {
-                            notificationBtn.textContent = '🔕 Notifications Bloquées';
-                        }
-                    });
-                } else {
-                    notificationBtn.textContent = '❌ Notifications non supportées';
-                    notificationBtn.disabled = true;
-                }
-            }
-            
-            // --- Fonctions de LocalStorage ---
-
-            function loadState() {
-                const savedCount = localStorage.getItem('pomodoroCount');
-                if (savedCount) {
-                    pomodoroCount = parseInt(savedCount, 10);
-                    sessionCounter.textContent = `Pomodoros Terminés : ${pomodoroCount}`;
-                }
-                
-                const savedRewards = localStorage.getItem('obtainedRewards');
-                if (savedRewards) {
-                    obtainedRewards = JSON.parse(savedRewards);
-                    renderRewards();
-                } else {
-                    rewardsList.innerHTML = '<p>Aucune récompense pour le moment. Travaille bien !</p>';
-                }
-
-                const savedTimes = localStorage.getItem('pomodoroTimes');
-                if (savedTimes) {
-                    times = JSON.parse(savedTimes);
-                    document.getElementById('pomodoro-time').value = times.pomodoro;
-                    document.getElementById('short-break-time').value = times.shortBreak;
-                    document.getElementById('long-break-time').value = times.longBreak;
-                }
-                
-                const savedAutoStart = localStorage.getItem('autoStartEnabled');
-                if (savedAutoStart !== null) {
-                    autoStartEnabled = savedAutoStart === 'true';
-                    updateAutoStartButton();
-                }
-
-                setTimer(currentMode, times[currentMode]);
-                
-                // Vérifier l'état initial de la permission de notification
-                if ('Notification' in window && Notification.permission === 'granted') {
-                    notificationBtn.textContent = '🔔 Notifications ON';
-                    notificationBtn.disabled = true;
-                } else if ('Notification' in window && Notification.permission === 'denied') {
-                    notificationBtn.textContent = '🔕 Notifications Bloquées';
-                }
-            }
-
-            function saveState() {
-                localStorage.setItem('pomodoroCount', pomodoroCount);
-                localStorage.setItem('obtainedRewards', JSON.stringify(obtainedRewards));
-                localStorage.setItem('pomodoroTimes', JSON.stringify(times));
-                localStorage.setItem('autoStartEnabled', autoStartEnabled);
-            }
-
-            // --- Fonctions du Minuteur ---
-
-            function updateDisplay() {
-                const minutes = Math.floor(totalSeconds / 60);
-                const seconds = totalSeconds % 60;
-                const timeString = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-                timerDisplay.textContent = timeString;
-                // Mettre à jour le titre de l'onglet pour l'arrière-plan
-                document.title = `(${timeString}) ${currentMode.toUpperCase()}`;
-            }
-
-            function setTimer(mode, minutes) {
-                currentMode = mode;
-                totalSeconds = minutes * 60;
-                updateDisplay();
-                updateModeButtons(mode);
-                updateBodyStyle(mode); 
-            }
-            
-            function tick() {
-                if (totalSeconds <= 0) {
-                    clearInterval(intervalId);
-                    intervalId = null;
-                    isPaused = true;
-                    
-                    playBeep(); 
-
-                    let nextMode;
-                    let notificationTitle;
-                    let notificationBody;
-
-                    if (currentMode === 'pomodoro') {
-                        pomodoroCount++;
-                        sessionCounter.textContent = `Pomodoros Terminés : ${pomodoroCount}`;
-                        saveState(); 
-                        checkReward(pomodoroCount); 
-                        
-                        nextMode = (pomodoroCount % 4 === 0) ? 'longBreak' : 'shortBreak';
-                        notificationTitle = `🍅 Session terminée (${pomodoroCount}) !`;
-                        notificationBody = `C'est l'heure de la PAUSE ${nextMode === 'longBreak' ? 'longue (15 min)' : 'courte (5 min)'} !`;
-                    } else {
-                        nextMode = 'pomodoro';
-                        notificationTitle = `☕ Pause terminée !`;
-                        notificationBody = `🦾 Retour au TRAVAIL (25 min) ! Concentration maximale.`;
-                    }
-                    
-                    // Envoyer la notification non-bloquante
-                    sendNotification(notificationTitle, notificationBody);
-
-                    // Passage au mode suivant avec demande d'auto-start
-                    switchToMode(nextMode, true); 
-
-                } else if (!isPaused) {
-                    totalSeconds--;
-                    updateDisplay();
-                }
-            }
-
-            function startTimer() {
-                if (!intervalId || isPaused) {
-                    isPaused = false;
-                    if (!intervalId) {
-                        intervalId = setInterval(tick, 1000);
-                    }
-                    startBtn.style.display = 'none';
-                    pauseBtn.style.display = 'block';
-                }
-            }
-
-            function pauseTimer() {
-                isPaused = true;
-                clearInterval(intervalId);
-                intervalId = null;
-                startBtn.style.display = 'block';
-                pauseBtn.style.display = 'none';
-                document.title = `PAUSED - ${currentMode.toUpperCase()}`;
-            }
-
-            function resetTimer() {
-                clearInterval(intervalId);
-                intervalId = null;
-                isPaused = true;
-                setTimer(currentMode, times[currentMode]);
-                startBtn.style.display = 'block';
-                pauseBtn.style.display = 'none';
-                document.title = `Minuteur Pomodoro Stylé 🍅✨`;
-            }
-            
-            function switchToMode(mode, autoStart = false) {
-                if (intervalId) {
-                    clearInterval(intervalId);
-                    intervalId = null;
-                }
-                setTimer(mode, times[mode]);
-                isPaused = true;
-                startBtn.style.display = 'block';
-                pauseBtn.style.display = 'none';
-
-                if (autoStart && autoStartEnabled) { 
-                    setTimeout(startTimer, 100); 
-                }
-            }
-
-            function updateModeButtons(activeMode) {
-                modePomodoro.classList.remove('active');
-                modeShortBreak.classList.remove('active');
-                modeLongBreak.classList.remove('active');
-                
-                if (activeMode === 'pomodoro') modePomodoro.classList.add('active');
-                if (activeMode === 'shortBreak') modeShortBreak.classList.add('active');
-                if (activeMode === 'longBreak') modeLongBreak.classList.add('active');
-            }
-
-            function updateBodyStyle(activeMode) {
-                body.classList.remove('mode-pomodoro', 'mode-shortBreak', 'mode-longBreak');
-                body.classList.add(`mode-${activeMode}`);
-            }
-
-            function toggleAutoStart() {
-                autoStartEnabled = !autoStartEnabled;
-                saveState();
-                updateAutoStartButton();
-            }
-
-            function updateAutoStartButton() {
-                toggleAutoStartBtn.textContent = `🔁 Auto-Enchaînement : ${autoStartEnabled ? 'ON' : 'OFF'}`;
-                if (autoStartEnabled) {
-                    toggleAutoStartBtn.classList.add('active');
-                } else {
-                    toggleAutoStartBtn.classList.remove('active');
-                }
-            }
-
-
-            // --- Fonctions de Récompenses ---
-
-            function checkReward(count) {
-                const newReward = allRewards.find(r => r.required === count);
-                
-                if (newReward && !obtainedRewards.some(r => r.required === newReward.required)) {
-                    obtainedRewards.push(newReward);
-                    saveState(); 
-                    renderRewards(); 
-                    // Affichage d'une notification discrète dans l'interface
-                    rewardNotification.style.display = 'block';
-                    rewardNotification.textContent = `🎉 NOUVELLE RÉCOMPENSE DÉBLOQUÉE : ${newReward.emoji} ${newReward.desc} !`;
-                    setTimeout(() => {
-                        rewardNotification.style.display = 'none';
-                    }, 5000); // Cache la notification après 5 secondes
-                }
-            }
-
-            function renderRewards() {
-                rewardsList.innerHTML = ''; 
-                
-                if (obtainedRewards.length === 0) {
-                    rewardsList.innerHTML = '<p>Aucune récompense pour le moment. Travaille bien !</p>';
-                    return;
-                }
-
-                const sortedRewards = [...obtainedRewards].sort((a, b) => b.required - a.required);
-
-                sortedRewards.forEach(reward => {
-                    const rewardItem = document.createElement('div');
-                    rewardItem.className = 'reward-item';
-                    rewardItem.innerHTML = `${reward.emoji} <strong>${reward.desc}</strong> (${reward.required} Pomodoros)`;
-                    rewardsList.appendChild(rewardItem);
-                });
-            }
-
-            // --- Gestionnaires d'Événements ---
-            startBtn.addEventListener('click', startTimer);
-            pauseBtn.addEventListener('click', pauseTimer);
-            document.getElementById('reset-btn').addEventListener('click', resetTimer);
-
-            modePomodoro.addEventListener('click', () => switchToMode('pomodoro'));
-            modeShortBreak.addEventListener('click', () => switchToMode('shortBreak'));
-            modeLongBreak.addEventListener('click', () => switchToMode('longBreak'));
-            
-            toggleAutoStartBtn.addEventListener('click', toggleAutoStart);
-            notificationBtn.addEventListener('click', requestNotificationPermission); // Nouveau
-            
-            saveSettingsBtn.addEventListener('click', () => {
-                const pTime = parseInt(document.getElementById('pomodoro-time').value, 10);
-                const sTime = parseInt(document.getElementById('short-break-time').value, 10);
-                const lTime = parseInt(document.getElementById('long-break-time').value, 10);
-                
-                if (pTime > 0 && sTime > 0 && lTime > 0) {
-                    times.pomodoro = pTime;
-                    times.shortBreak = sTime;
-                    times.longBreak = lTime;
-                    saveState();
-                    if (!intervalId) {
-                        setTimer(currentMode, times[currentMode]);
-                    }
-                    // Notification de sauvegarde non bloquante
-                    rewardNotification.style.display = 'block';
-                    rewardNotification.textContent = '💾 Temps et paramètres sauvegardés !';
-                    setTimeout(() => { rewardNotification.style.display = 'none'; }, 2000);
-                } else {
-                    // Utilisation d'une notification interne à la place d'une alerte bloquante
-                    rewardNotification.style.display = 'block';
-                    rewardNotification.textContent = '❌ Erreur: Veuillez entrer des valeurs valides (supérieures à 0).';
-                    rewardNotification.style.color = '#dc3545'; // Rouge d'erreur
-                    setTimeout(() => { 
-                        rewardNotification.style.display = 'none';
-                        rewardNotification.style.color = '#20c997'; // Remettre la couleur normale
-                    }, 3000);
-                }
+        // Toggle FlyByWire Pushback system
+        btnPbSystem.addEventListener('click', () => {
+            const targetState = !pbSystemEnabled;
+            sendMessage({
+                command: "vars.calc",
+                name: "set_pb_sys",
+                code: `${targetState ? 1 : 0} (>L:A32NX_PUSHBACK_SYSTEM_ENABLED, Number)`
             });
+            // Anticipate state change to make it feel responsive
+            setPbSystemState(targetState);
+        });
 
-            // --- Initialisation ---
-            loadState();
+        // Toggle Tug connection (SimConnect Event)
+        btnPbTug.addEventListener('click', () => {
+            sendMessage({
+                command: "vars.calc",
+                name: "toggle_tug",
+                code: "(>K:TOGGLE_PUSHBACK)"
+            });
+        });
+
+        // Set speed throttle
+        function sendSpeed(val) {
+            // Speed factor is between -1.0 and 1.0
+            const factor = (val / 100).toFixed(2);
+            sendMessage({
+                command: "vars.calc",
+                name: "set_speed",
+                code: `${factor} (>L:A32NX_PUSHBACK_SPD_FACTOR, Number)`
+            });
+            
+            // UI text update
+            if (val > 0) {
+                speedVal.textContent = `AVANT ${val}%`;
+                speedVal.style.color = '#3b82f6';
+            } else if (val < 0) {
+                speedVal.textContent = `ARRIÈRE ${Math.abs(val)}%`;
+                speedVal.style.color = '#f59e0b';
+            } else {
+                speedVal.textContent = 'STOP';
+                speedVal.style.color = '#ef4444';
+            }
+        }
+
+        speedSlider.addEventListener('input', (e) => {
+            sendSpeed(parseInt(e.target.value));
+        });
+
+        btnStop.addEventListener('click', () => {
+            speedSlider.value = 0;
+            sendSpeed(0);
+        });
+
+        // Set steering wheel
+        function sendSteering(val) {
+            // Steering factor is between -1.0 (left) and 1.0 (right)
+            const factor = (val / 100).toFixed(2);
+            sendMessage({
+                command: "vars.calc",
+                name: "set_steer",
+                code: `${factor} (>L:A32NX_PUSHBACK_HDG_FACTOR, Number)`
+            });
+            
+            updateSteerUI(val);
+        }
+
+        function updateSteerUI(val) {
+            // Update Text
+            if (val > 0) {
+                steerVal.textContent = `DROITE ${val}%`;
+                steerVal.style.color = '#10b981';
+            } else if (val < 0) {
+                steerVal.textContent = `GAUCHE ${Math.abs(val)}%`;
+                steerVal.style.color = '#10b981';
+            } else {
+                steerVal.textContent = 'CENTRE';
+                steerVal.style.color = '#94a3b8';
+            }
+
+            // Update joystick visual
+            // Base size: 140px, Handle size: 40px
+            // Available space for movement: (140 - 40) = 100px. Left range: 0px to 100px. Center: 50px
+            const offset = 50 + (val / 100) * 50;
+            joyHandle.style.left = `${offset}px`;
+        }
+
+        steerSlider.addEventListener('input', (e) => {
+            sendSteering(parseInt(e.target.value));
+        });
+
+        btnCenter.addEventListener('click', () => {
+            steerSlider.value = 0;
+            sendSteering(0);
+        });
+
+        // Handle Touch / Mouse on Joystick
+        let isDraggingJoy = false;
+        
+        function handleJoystickMovement(clientX) {
+            const rect = joyBase.getBoundingClientRect();
+            const baseCenterX = rect.left + rect.width / 2;
+            let deltaX = clientX - baseCenterX;
+            
+            // Limit to max offset (50px)
+            const maxOffset = 50;
+            if (deltaX > maxOffset) deltaX = maxOffset;
+            if (deltaX < -maxOffset) deltaX = -maxOffset;
+            
+            const steerPercent = Math.round((deltaX / maxOffset) * 100);
+            steerSlider.value = steerPercent;
+            sendSteering(steerPercent);
+        }
+
+        joyBase.addEventListener('mousedown', (e) => {
+            isDraggingJoy = true;
+            handleJoystickMovement(e.clientX);
+        });
+
+        window.addEventListener('mousemove', (e) => {
+            if (isDraggingJoy) {
+                handleJoystickMovement(e.clientX);
+            }
+        });
+
+        window.addEventListener('mouseup', () => {
+            isDraggingJoy = false;
+        });
+
+        // Touch support for mobiles
+        joyBase.addEventListener('touchstart', (e) => {
+            isDraggingJoy = true;
+            handleJoystickMovement(e.touches[0].clientX);
+        }, { passive: true });
+
+        window.addEventListener('touchmove', (e) => {
+            if (isDraggingJoy) {
+                handleJoystickMovement(e.touches[0].clientX);
+            }
+        }, { passive: false });
+
+        window.addEventListener('touchend', () => {
+            isDraggingJoy = false;
+        });
+
+
+        // Process incoming bridge/FSUIPC messages
+        function handleIncomingMessage(msg) {
+            // Check simulator connection status reported by the bridge
+            if (msg.simConnected !== undefined) {
+                if (msg.simConnected) {
+                    simDot.classList.add('connected');
+                } else {
+                    simDot.classList.remove('connected');
+                }
+            }
+
+            // Aircraft information
+            if (msg.aircraft) {
+                simAircraft.textContent = msg.aircraft;
+            }
+            if (msg.groundSpeed !== undefined) {
+                simGs.textContent = `${Math.round(msg.groundSpeed)} kts`;
+            }
+            if (msg.parkingBrake !== undefined) {
+                simParkBrake.textContent = msg.parkingBrake ? "SERRÉ" : "DESSERRÉ";
+                simParkBrake.style.color = msg.parkingBrake ? "#ef4444" : "#10b981";
+            }
+
+            // LVAR Values Updates (received from FSUIPC WebSocket Server via Bridge)
+            if (msg.name !== undefined && msg.value !== undefined) {
+                if (msg.name === "L:A32NX_PUSHBACK_SYSTEM_ENABLED") {
+                    setPbSystemState(msg.value === 1);
+                } else if (msg.name === "L:A32NX_PUSHBACK_SPD_FACTOR") {
+                    const spdValPercent = Math.round(msg.value * 100);
+                    if (!isUserInteracting(speedSlider)) {
+                        speedSlider.value = spdValPercent;
+                        updateSpeedDisplay(spdValPercent);
+                    }
+                } else if (msg.name === "L:A32NX_PUSHBACK_HDG_FACTOR") {
+                    const steerValPercent = Math.round(msg.value * 100);
+                    if (!isUserInteracting(steerSlider) && !isDraggingJoy) {
+                        steerSlider.value = steerValPercent;
+                        updateSteerUI(steerValPercent);
+                    }
+                }
+            }
+
+            // Standard pushback state checks (Tug connected)
+            if (msg.pushbackState !== undefined) {
+                const isTugActive = msg.pushbackState < 3;
+                setTugState(isTugActive);
+            }
+        }
+
+        function isUserInteracting(el) {
+            return el === document.activeElement;
+        }
+
+        function updateSpeedDisplay(val) {
+            if (val > 0) {
+                speedVal.textContent = `AVANT ${val}%`;
+                speedVal.style.color = '#3b82f6';
+            } else if (val < 0) {
+                speedVal.textContent = `ARRIÈRE ${Math.abs(val)}%`;
+                speedVal.style.color = '#f59e0b';
+            } else {
+                speedVal.textContent = 'STOP';
+                speedVal.style.color = '#ef4444';
+            }
+        }
+
+        function setPbSystemState(enabled) {
+            pbSystemEnabled = enabled;
+            if (enabled) {
+                btnPbSystem.classList.add('active');
+                lblPbSystem.textContent = 'ACTIVÉ';
+                lblPbSystem.style.color = '#10b981';
+            } else {
+                btnPbSystem.classList.remove('active');
+                lblPbSystem.textContent = 'DÉSACTIVÉ';
+                lblPbSystem.style.color = 'var(--text-muted)';
+            }
+        }
+
+        function setTugState(connected) {
+            tugConnected = connected;
+            if (connected) {
+                btnPbTug.classList.add('active');
+                lblPbTug.textContent = 'CONNECTÉ';
+                lblPbTug.style.color = '#10b981';
+            } else {
+                btnPbTug.classList.remove('active');
+                lblPbTug.textContent = 'DÉCONNECTÉ';
+                lblPbTug.style.color = 'var(--text-muted)';
+            }
+        }
+
+        function resetUIState() {
+            simAircraft.textContent = 'Inconnu';
+            simGs.textContent = '0 kts';
+            simParkBrake.textContent = '-';
+            simParkBrake.style.color = 'white';
+            setPbSystemState(false);
+            setTugState(false);
+            speedSlider.value = 0;
+            updateSpeedDisplay(0);
+            steerSlider.value = 0;
+            updateSteerUI(0);
+        }
+
+        // Auto connect on load if possible
+        window.addEventListener('DOMContentLoaded', () => {
+            setTimeout(connect, 500);
         });
     </script>
 </body>
